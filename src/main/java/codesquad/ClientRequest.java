@@ -1,5 +1,6 @@
 package codesquad;
 
+import codesquad.message.HttpRequest;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class ClientRequest implements Runnable {
             // HTTP 요청을 파싱합니다.
             InputStream clientInput = clientSocket.getInputStream();
             String rawHttpRequestMessage = readHttpRequestMessage(clientInput);
-            HttpRequestMessage requestMessage = HttpRequestMessage.parse(rawHttpRequestMessage);
+            HttpRequest requestMessage = HttpRequest.parse(rawHttpRequestMessage);
             log.debug("Http request message={}", requestMessage);
 
             // 컨텐츠 타입을 매핑합니다.
@@ -44,7 +45,7 @@ public class ClientRequest implements Runnable {
             String contentTypeHeader = MessageFormat.format("Content-Type: {0}\r\n", contentType);
             clientOutput.write(contentTypeHeader.getBytes());
             clientOutput.write("\r\n".getBytes());
-            clientOutput.write(getStaticFile("static" + requestMessage.requestUrl()));
+            clientOutput.write(getStaticFile(requestMessage.requestUrl()).getBytes());
             clientOutput.flush();
 
             clientSocket.close();
@@ -63,10 +64,10 @@ public class ClientRequest implements Runnable {
         return sb.toString();
     }
 
-    private byte[] getStaticFile(String resourcePath) throws IOException {
-        URL resource = getClass().getClassLoader().getResource(resourcePath);
+    private String getStaticFile(String resourcePath) throws IOException {
+        URL resource = getClass().getClassLoader().getResource("static" + resourcePath);
         try (FileInputStream fileInputStream = new FileInputStream(resource.getPath())) {
-            return fileInputStream.readAllBytes();
+            return new String(fileInputStream.readAllBytes());
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("유효하지 않은 경로입니다. path=" + resourcePath);
         }

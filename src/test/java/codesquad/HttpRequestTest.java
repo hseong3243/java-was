@@ -2,11 +2,12 @@ package codesquad;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import codesquad.message.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class HttpRequestMessageTest {
+class HttpRequestTest {
 
     @Nested
     @DisplayName("parse 호출 시")
@@ -23,15 +24,15 @@ class HttpRequestMessageTest {
                     Cache-Control: max-age=0""";
 
             //when
-            HttpRequestMessage httpRequestMessage = HttpRequestMessage.parse(rawHttpMessage);
+            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
 
             //then
-            assertEquals("GET", httpRequestMessage.method());
-            assertEquals("/index.html", httpRequestMessage.requestUrl());
-            assertEquals("HTTP/1.1", httpRequestMessage.httpVersion());
-            assertEquals("localhost:8080", httpRequestMessage.header().get("Host"));
-            assertEquals("keep-alive", httpRequestMessage.header().get("Connection"));
-            assertEquals("max-age=0", httpRequestMessage.header().get("Cache-Control"));
+            assertEquals("GET", httpRequest.method());
+            assertEquals("/index.html", httpRequest.requestUrl());
+            assertEquals("HTTP/1.1", httpRequest.httpVersion());
+            assertEquals("localhost:8080", httpRequest.header().get("Host"));
+            assertEquals("keep-alive", httpRequest.header().get("Connection"));
+            assertEquals("max-age=0", httpRequest.header().get("Cache-Control"));
         }
     }
 }

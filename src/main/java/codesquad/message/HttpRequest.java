@@ -1,13 +1,13 @@
-package codesquad;
+package codesquad.message;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public record HttpRequestMessage(String method, String requestUrl, String httpVersion, Map<String, String> header,
-                                 String body) {
+public record HttpRequest(String method, String requestUrl, String httpVersion, Map<String, String> header,
+                          String body) {
 
-    public static HttpRequestMessage parse(String rawHttpMessage) {
+    public static HttpRequest parse(String rawHttpMessage) {
         StringTokenizer st = new StringTokenizer(rawHttpMessage);
         String method = st.nextToken();
         String requestUrl = st.nextToken();
@@ -25,6 +25,6 @@ public record HttpRequestMessage(String method, String requestUrl, String httpVe
             value = st.nextToken();
             header.put(key, value);
         }
-        return new HttpRequestMessage(method, requestUrl, httpVersion, header, "");
+        return new HttpRequest(method, requestUrl, httpVersion, header, "");
     }
 }

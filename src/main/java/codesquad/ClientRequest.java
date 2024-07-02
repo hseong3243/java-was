@@ -1,6 +1,7 @@
 package codesquad;
 
 import codesquad.message.HttpRequest;
+import codesquad.message.HttpResponse;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
-import java.text.MessageFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +41,10 @@ public class ClientRequest implements Runnable {
 
             // HTTP 응답을 생성합니다.
             OutputStream clientOutput = clientSocket.getOutputStream();
-            clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-            String contentTypeHeader = MessageFormat.format("Content-Type: {0}\r\n", contentType);
-            clientOutput.write(contentTypeHeader.getBytes());
-            clientOutput.write("\r\n".getBytes());
-            clientOutput.write(getStaticFile(requestMessage.requestUrl()).getBytes());
+            HttpResponse httpResponse = new HttpResponse("HTTP/1.1", 200, "OK",
+                    getStaticFile(requestMessage.requestUrl()));
+            httpResponse.addHeader("Content-Type", contentType);
+            clientOutput.write(httpResponse.toHttpMessage().getBytes());
             clientOutput.flush();
 
             clientSocket.close();

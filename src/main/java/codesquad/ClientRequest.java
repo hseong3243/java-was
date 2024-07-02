@@ -32,14 +32,20 @@ public class ClientRequest implements Runnable {
             HttpRequest requestMessage = getHttpRequest();
             log.debug("Http request message={}", requestMessage);
 
+            // 요청 경로에 따라 정적 html 파일 경로를 생성합니다.
+            String requestUrl = requestMessage.requestUrl();
+            if(!requestUrl.contains(".")) {
+                requestUrl = requestUrl + "/index.html";
+            }
+
             // HTTP 응답을 생성합니다.
             OutputStream clientOutput = clientSocket.getOutputStream();
             HttpResponse httpResponse = new HttpResponse(
                     "HTTP/1.1",
                     200,
                     "OK",
-                    getStaticFile(requestMessage.requestUrl()));
-            httpResponse.addHeader("Content-Type", getContentType(requestMessage));
+                    getStaticFile(requestUrl));
+            httpResponse.addHeader("Content-Type", getContentType(requestUrl));
             clientOutput.write(httpResponse.toHttpMessage().getBytes());
             clientOutput.flush();
 
@@ -65,14 +71,14 @@ public class ClientRequest implements Runnable {
         return sb.toString();
     }
 
-    private  String getContentType(HttpRequest requestMessage) {
-        int extensionStartIndex = requestMessage.requestUrl().indexOf(".");
-        String fileNameExtension = requestMessage.requestUrl().substring(extensionStartIndex + 1);
+    private  String getContentType(String requestUrl) {
+        int extensionStartIndex = requestUrl.indexOf(".");
+        String fileNameExtension = requestUrl.substring(extensionStartIndex + 1);
         return ContentTypes.getMimeType(fileNameExtension);
     }
 
     private String getStaticFile(String resourcePath) throws IOException {
-        URL resource = getClass().getClassLoader().getResource("static" + resourcePath);
+        URL resource = getClass().getClassLoader().getResource("static/" + resourcePath);
         try (FileInputStream fileInputStream = new FileInputStream(resource.getPath())) {
             return new String(fileInputStream.readAllBytes());
         } catch (NullPointerException e) {

@@ -29,21 +29,17 @@ public class ClientRequest implements Runnable {
             log.debug("Client connected");
 
             // HTTP 요청을 파싱합니다.
-            InputStream clientInput = clientSocket.getInputStream();
-            String rawHttpRequestMessage = readHttpRequestMessage(clientInput);
-            HttpRequest requestMessage = HttpRequest.parse(rawHttpRequestMessage);
+            HttpRequest requestMessage = getHttpRequest();
             log.debug("Http request message={}", requestMessage);
-
-            // 컨텐츠 타입을 매핑합니다.
-            int extensionStartIndex = requestMessage.requestUrl().indexOf(".");
-            String fileNameExtension = requestMessage.requestUrl().substring(extensionStartIndex + 1);
-            String contentType = ContentTypes.getMimeType(fileNameExtension);
 
             // HTTP 응답을 생성합니다.
             OutputStream clientOutput = clientSocket.getOutputStream();
-            HttpResponse httpResponse = new HttpResponse("HTTP/1.1", 200, "OK",
+            HttpResponse httpResponse = new HttpResponse(
+                    "HTTP/1.1",
+                    200,
+                    "OK",
                     getStaticFile(requestMessage.requestUrl()));
-            httpResponse.addHeader("Content-Type", contentType);
+            httpResponse.addHeader("Content-Type", getContentType(requestMessage));
             clientOutput.write(httpResponse.toHttpMessage().getBytes());
             clientOutput.flush();
 
@@ -53,7 +49,13 @@ public class ClientRequest implements Runnable {
         }
     }
 
-    private static String readHttpRequestMessage(InputStream clientInput) throws IOException {
+    private HttpRequest getHttpRequest() throws IOException {
+        InputStream clientInput = clientSocket.getInputStream();
+        String rawHttpRequestMessage = readHttpRequestMessage(clientInput);
+        return HttpRequest.parse(rawHttpRequestMessage);
+    }
+
+    private  String readHttpRequestMessage(InputStream clientInput) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(clientInput));
         StringBuilder sb = new StringBuilder();
         String readLine;
@@ -61,6 +63,12 @@ public class ClientRequest implements Runnable {
             sb.append(readLine).append("\n");
         }
         return sb.toString();
+    }
+
+    private  String getContentType(HttpRequest requestMessage) {
+        int extensionStartIndex = requestMessage.requestUrl().indexOf(".");
+        String fileNameExtension = requestMessage.requestUrl().substring(extensionStartIndex + 1);
+        return ContentTypes.getMimeType(fileNameExtension);
     }
 
     private String getStaticFile(String resourcePath) throws IOException {

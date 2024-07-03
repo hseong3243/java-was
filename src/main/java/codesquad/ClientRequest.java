@@ -1,15 +1,16 @@
 package codesquad;
 
+import codesquad.handler.Handler;
+import codesquad.handler.HandlerMapper;
+import codesquad.handler.ModelAndView;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpResponse;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +33,9 @@ public class ClientRequest implements Runnable {
             HttpRequest requestMessage = getHttpRequest();
             log.debug("Http request message={}", requestMessage);
 
-            // 요청 경로에 따라 정적 html 파일 경로를 생성합니다.
-            String requestUrl = requestMessage.requestUrl();
-            if(!requestUrl.contains(".")) {
-                requestUrl = requestUrl + "/index.html";
-            }
+            // 요청을 처리할 핸들러를 조회합니다.
+            Handler handler = HandlerMapper.mapping(requestMessage.requestUrl());
+            ModelAndView modelAndView = handler.handle(requestMessage);
 
             // HTTP 응답을 생성합니다.
             OutputStream clientOutput = clientSocket.getOutputStream();
@@ -44,8 +43,8 @@ public class ClientRequest implements Runnable {
                     "HTTP/1.1",
                     200,
                     "OK",
-                    getStaticFile(requestUrl));
-            httpResponse.addHeader("Content-Type", getContentType(requestUrl));
+                    modelAndView.getView());
+            httpResponse.addHeader("Content-Type", getContentType(requestMessage.requestUrl()));
             clientOutput.write(httpResponse.toHttpMessage().getBytes());
             clientOutput.flush();
 
@@ -61,7 +60,7 @@ public class ClientRequest implements Runnable {
         return HttpRequest.parse(rawHttpRequestMessage);
     }
 
-    private  String readHttpRequestMessage(InputStream clientInput) throws IOException {
+    private String readHttpRequestMessage(InputStream clientInput) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(clientInput));
         StringBuilder sb = new StringBuilder();
         String readLine;
@@ -71,18 +70,12 @@ public class ClientRequest implements Runnable {
         return sb.toString();
     }
 
-    private  String getContentType(String requestUrl) {
+    private String getContentType(String requestUrl) {
+        if (!requestUrl.contains(".")) {
+            requestUrl = requestUrl + "/index.html";
+        }
         int extensionStartIndex = requestUrl.indexOf(".");
         String fileNameExtension = requestUrl.substring(extensionStartIndex + 1);
         return ContentTypes.getMimeType(fileNameExtension);
-    }
-
-    private String getStaticFile(String resourcePath) throws IOException {
-        URL resource = getClass().getClassLoader().getResource("static/" + resourcePath);
-        try (FileInputStream fileInputStream = new FileInputStream(resource.getPath())) {
-            return new String(fileInputStream.readAllBytes());
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("유효하지 않은 경로입니다. path=" + resourcePath);
-        }
     }
 }

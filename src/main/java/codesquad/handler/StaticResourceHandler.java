@@ -1,11 +1,14 @@
 package codesquad.handler;
 
 import codesquad.message.HttpRequest;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StaticResourceHandler implements Handler {
+    private static final Logger log = LoggerFactory.getLogger(StaticResourceHandler.class);
+
     @Override
     public ModelAndView handle(HttpRequest httpRequest) {
         String viewPath = addIndexPath(httpRequest.requestUrl());
@@ -14,16 +17,19 @@ public class StaticResourceHandler implements Handler {
     }
 
     private String addIndexPath(String requestUrl) {
-        if (!requestUrl.contains(".")) {
-            return requestUrl + "/index.html";
+        if (requestUrl.contains(".")) {
+            return requestUrl;
         }
-        return requestUrl;
+        if (requestUrl.endsWith("/")) {
+            return requestUrl + "index.html";
+        }
+        return requestUrl + "/index.html";
     }
 
     private String getStaticFile(String resourcePath) {
-        URL resource = getClass().getClassLoader().getResource("static/" + resourcePath);
-        try (FileInputStream fileInputStream = new FileInputStream(resource.getPath())) {
-            return new String(fileInputStream.readAllBytes());
+        try {
+            InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("static" + resourcePath);
+            return new String(resourceAsStream.readAllBytes());
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("유효하지 않은 경로입니다. path=" + resourcePath);
         } catch (IOException e) {

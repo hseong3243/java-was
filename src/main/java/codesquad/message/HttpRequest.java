@@ -20,6 +20,9 @@ public record HttpRequest(String method, String requestUrl,
 
         // 쿼리를 분리한다.
         Map<String, String> queries = getQueries(requestUrl);
+        if (requestUrl.contains("?")) {
+            requestUrl = requestUrl.substring(0, requestUrl.indexOf("?"));
+        }
 
         Map<String, String> header = new HashMap<>();
         String key;
@@ -39,7 +42,7 @@ public record HttpRequest(String method, String requestUrl,
     private static Map<String, String> getQueries(String requestUrl) {
         Map<String, String> queries = new HashMap<>();
         int substringPoint = requestUrl.indexOf("?") + 1;
-        if(substringPoint == 0) {
+        if (substringPoint == 0) {
             return queries;
         }
         String[] keyValues = requestUrl.substring(substringPoint).split("&");

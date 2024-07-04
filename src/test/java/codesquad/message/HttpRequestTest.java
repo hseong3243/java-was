@@ -1,7 +1,6 @@
 package codesquad.message;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -28,12 +27,12 @@ class HttpRequestTest {
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
 
             //then
-            assertEquals("GET", httpRequest.method());
-            assertEquals("/index.html", httpRequest.requestUrl());
-            assertEquals("HTTP/1.1", httpRequest.httpVersion());
-            assertEquals("localhost:8080", httpRequest.header().get("Host"));
-            assertEquals("keep-alive", httpRequest.header().get("Connection"));
-            assertEquals("max-age=0", httpRequest.header().get("Cache-Control"));
+            assertThat(httpRequest.method()).isEqualTo("GET");
+            assertThat(httpRequest.requestUrl()).isEqualTo("/index.html");
+            assertThat(httpRequest.httpVersion()).isEqualTo("HTTP/1.1");
+            assertThat(httpRequest.header().get("Host")).isEqualTo("localhost:8080");
+            assertThat(httpRequest.header().get("Connection")).isEqualTo("keep-alive");
+            assertThat(httpRequest.header().get("Cache-Control")).isEqualTo("max-age=0");
         }
 
         @Test
@@ -50,6 +49,12 @@ class HttpRequestTest {
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
 
             //then
+            assertThat(httpRequest.method()).isEqualTo("GET");
+            assertThat(httpRequest.requestUrl()).isEqualTo("/create");
+            assertThat(httpRequest.httpVersion()).isEqualTo("HTTP/1.1");
+            assertThat(httpRequest.header().get("Host")).isEqualTo("localhost:8080");
+            assertThat(httpRequest.header().get("Connection")).isEqualTo("keep-alive");
+            assertThat(httpRequest.header().get("Cache-Control")).isEqualTo("max-age=0");
             Map<String, String> queries = httpRequest.queries();
             assertThat(queries.get("userId")).isNotNull().isEqualTo("javajigi");
             assertThat(queries.get("password")).isNotNull().isEqualTo("password");

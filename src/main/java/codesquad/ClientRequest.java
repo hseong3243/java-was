@@ -5,18 +5,21 @@ import codesquad.handler.HandlerMapper;
 import codesquad.handler.ModelAndView;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpResponse;
+import codesquad.message.HttpStatusCode;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClientRequest implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(ClientRequest.class);
+    public static final String HTTP_1_1 = "HTTP/1.1";
 
     private final Socket clientSocket;
 
@@ -26,6 +29,14 @@ public class ClientRequest implements Runnable {
 
     @Override
     public void run() {
+        try (OutputStream clientOutput = clientSocket.getOutputStream()) {
+            process(clientOutput);
+        } catch (IOException e) {
+            log.error("입출력 예외가 발생했습니다.", e);
+        }
+    }
+
+    private void process(OutputStream clientOutput) throws IOException {
         try {
             log.debug("Client connected");
 
@@ -38,9 +49,8 @@ public class ClientRequest implements Runnable {
             ModelAndView modelAndView = handler.handle(requestMessage);
 
             // HTTP 응답을 생성합니다.
-            OutputStream clientOutput = clientSocket.getOutputStream();
             HttpResponse httpResponse = new HttpResponse(
-                    "HTTP/1.1",
+                    HTTP_1_1,
                     modelAndView.getStatusCode(),
                     modelAndView.getView());
             httpResponse.addHeader("Content-Type", getContentType(requestMessage.requestUrl()));
@@ -48,8 +58,8 @@ public class ClientRequest implements Runnable {
             clientOutput.flush();
 
             clientSocket.close();
-        } catch (IOException e) {
-            log.warn("입출력 예외가 발생했습니다.", e);
+        } catch (Exception e) {
+            errorHandle(clientOutput, e);
         }
     }
 
@@ -76,5 +86,17 @@ public class ClientRequest implements Runnable {
         int extensionStartIndex = requestUrl.indexOf(".");
         String fileNameExtension = requestUrl.substring(extensionStartIndex + 1);
         return ContentTypes.getMimeType(fileNameExtension);
+    }
+
+    private void errorHandle(OutputStream clientOutput, Exception e) throws IOException {
+        HttpResponse httpResponse;
+        if (e instanceof IllegalArgumentException) {
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.BAD_REQUEST, "올바르지 않은 요청입니다.");
+        } else if (e instanceof NoSuchElementException) {
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.NOT_FOUND, "존재하지 않는 리소스입니다.");
+        } else {
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다.");
+        }
+        clientOutput.write(httpResponse.toHttpMessage().getBytes());
     }
 }

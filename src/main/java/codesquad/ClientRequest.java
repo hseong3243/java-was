@@ -41,8 +41,7 @@ public class ClientRequest implements Runnable {
             OutputStream clientOutput = clientSocket.getOutputStream();
             HttpResponse httpResponse = new HttpResponse(
                     "HTTP/1.1",
-                    200,
-                    "OK",
+                    modelAndView.getStatusCode(),
                     modelAndView.getView());
             httpResponse.addHeader("Content-Type", getContentType(requestMessage.requestUrl()));
             clientOutput.write(httpResponse.toHttpMessage().getBytes());

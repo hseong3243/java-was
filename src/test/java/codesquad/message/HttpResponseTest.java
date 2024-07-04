@@ -16,7 +16,7 @@ class HttpResponseTest {
         @DisplayName("HTTP 메시지로 변환된다.")
         void test() {
             //given
-            HttpResponse httpResponse = new HttpResponse("HTTP/1.1", 200, "OK", "body");
+            HttpResponse httpResponse = new HttpResponse("HTTP/1.1", HttpStatusCode.OK, "body");
             httpResponse.addHeader("Content-Type", "text/html");
 
             //when

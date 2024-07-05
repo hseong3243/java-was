@@ -1,5 +1,6 @@
 package codesquad.message;
 
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -19,10 +20,9 @@ public record HttpRequest(String method, String requestUrl,
         String httpVersion = st.nextToken();
 
         // 쿼리를 분리한다.
-        Map<String, String> queries = getQueries(requestUrl);
-        if (requestUrl.contains("?")) {
-            requestUrl = requestUrl.substring(0, requestUrl.indexOf("?"));
-        }
+        URI uri = URI.create(requestUrl);
+        Map<String, String> queries = getQueries(uri.getQuery());
+        requestUrl = uri.getPath();
 
         Map<String, String> header = new HashMap<>();
         String key;
@@ -39,19 +39,26 @@ public record HttpRequest(String method, String requestUrl,
         return new HttpRequest(method, requestUrl, queries, httpVersion, header, "");
     }
 
-    private static Map<String, String> getQueries(String requestUrl) {
+    private static Map<String, String> getQueries(String queryString) {
         Map<String, String> queries = new HashMap<>();
-        int substringPoint = requestUrl.indexOf("?") + 1;
-        if (substringPoint == 0) {
+        if(queryString == null || queryString.isBlank()) {
             return queries;
         }
-        String[] keyValues = requestUrl.substring(substringPoint).split("&");
+        String[] keyValues = queryString.split("&");
         for (String keyValue : keyValues) {
+            checkQuery(keyValue);
             String[] keyAndValue = keyValue.split("=");
             queries.put(
                     URLDecoder.decode(keyAndValue[0], StandardCharsets.UTF_8),
                     URLDecoder.decode(keyAndValue[1], StandardCharsets.UTF_8));
         }
         return queries;
+    }
+
+    private static void checkQuery(String keyValue) {
+        if (keyValue.contains("=")) {
+            return;
+        }
+        throw new IllegalArgumentException("쿼리 마라미터가 올바르지 않습니다.");
     }
 }

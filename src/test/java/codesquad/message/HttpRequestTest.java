@@ -1,6 +1,7 @@
 package codesquad.message;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchException;
 
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -60,6 +61,45 @@ class HttpRequestTest {
             assertThat(queries.get("password")).isNotNull().isEqualTo("password");
             assertThat(queries.get("name")).isNotNull().isEqualTo("박재성");
             assertThat(queries.get("email")).isNotNull().isEqualTo("javajigi@slipp.net");
+        }
+
+        @Test
+        @DisplayName("?만 들어오면 무시한다.")
+        void asdf() {
+            //given
+            String rawHttpMessage = """
+                    GET /create? HTTP/1.1
+                    Host: localhost:8080
+                    Connection: keep-alive
+                    Cache-Control: max-age=0""";
+
+            //when
+            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+
+            //then
+            assertThat(httpRequest.method()).isEqualTo("GET");
+            assertThat(httpRequest.requestUrl()).isEqualTo("/create");
+            assertThat(httpRequest.httpVersion()).isEqualTo("HTTP/1.1");
+            assertThat(httpRequest.header().get("Host")).isEqualTo("localhost:8080");
+            assertThat(httpRequest.header().get("Connection")).isEqualTo("keep-alive");
+            assertThat(httpRequest.header().get("Cache-Control")).isEqualTo("max-age=0");
+        }
+
+        @Test
+        @DisplayName("예외(IllegalArgument): 쿼리 파라미터에 =가 없으면")
+        void illegalArgument_WhenQueryDoesNotHaveEqual() {
+            //given
+            String rawHttpMessage = """
+                    GET /create?key HTTP/1.1
+                    Host: localhost:8080
+                    Connection: keep-alive
+                    Cache-Control: max-age=0""";
+
+            //when
+            Exception exception = catchException(() -> HttpRequest.parse(rawHttpMessage));
+
+            //then
+            assertThat(exception).isInstanceOf(IllegalArgumentException.class);
         }
     }
 }

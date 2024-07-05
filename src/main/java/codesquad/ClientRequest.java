@@ -1,20 +1,25 @@
 package codesquad;
 
+import codesquad.handler.Handler;
+import codesquad.handler.HandlerMapper;
+import codesquad.handler.ModelAndView;
+import codesquad.message.HttpRequest;
+import codesquad.message.HttpResponse;
+import codesquad.message.HttpStatusCode;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URL;
-import java.text.MessageFormat;
+import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClientRequest implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(ClientRequest.class);
+    public static final String HTTP_1_1 = "HTTP/1.1";
 
     private final Socket clientSocket;
 
@@ -24,36 +29,47 @@ public class ClientRequest implements Runnable {
 
     @Override
     public void run() {
+        try (OutputStream clientOutput = clientSocket.getOutputStream()) {
+            process(clientOutput);
+        } catch (IOException e) {
+            log.error("입출력 예외가 발생했습니다.", e);
+        }
+    }
+
+    private void process(OutputStream clientOutput) throws IOException {
         try {
             log.debug("Client connected");
 
             // HTTP 요청을 파싱합니다.
-            InputStream clientInput = clientSocket.getInputStream();
-            String rawHttpRequestMessage = readHttpRequestMessage(clientInput);
-            HttpRequestMessage requestMessage = HttpRequestMessage.parse(rawHttpRequestMessage);
+            HttpRequest requestMessage = getHttpRequest();
             log.debug("Http request message={}", requestMessage);
 
-            // 컨텐츠 타입을 매핑합니다.
-            int extensionStartIndex = requestMessage.requestUrl().indexOf(".");
-            String fileNameExtension = requestMessage.requestUrl().substring(extensionStartIndex + 1);
-            String contentType = ContentTypes.getMimeType(fileNameExtension);
+            // 요청을 처리할 핸들러를 조회합니다.
+            Handler handler = HandlerMapper.mapping(requestMessage.requestUrl());
+            ModelAndView modelAndView = handler.handle(requestMessage);
 
             // HTTP 응답을 생성합니다.
-            OutputStream clientOutput = clientSocket.getOutputStream();
-            clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-            String contentTypeHeader = MessageFormat.format("Content-Type: {0}\r\n", contentType);
-            clientOutput.write(contentTypeHeader.getBytes());
-            clientOutput.write("\r\n".getBytes());
-            clientOutput.write(getStaticFile("static" + requestMessage.requestUrl()));
+            HttpResponse httpResponse = new HttpResponse(
+                    HTTP_1_1,
+                    modelAndView.getStatusCode(),
+                    modelAndView.getView());
+            httpResponse.addHeader("Content-Type", getContentType(requestMessage.requestUrl()));
+            clientOutput.write(httpResponse.toHttpMessage().getBytes());
             clientOutput.flush();
 
             clientSocket.close();
-        } catch (IOException e) {
-            log.warn("입출력 예외가 발생했습니다.", e);
+        } catch (Exception e) {
+            errorHandle(clientOutput, e);
         }
     }
 
-    private static String readHttpRequestMessage(InputStream clientInput) throws IOException {
+    private HttpRequest getHttpRequest() throws IOException {
+        InputStream clientInput = clientSocket.getInputStream();
+        String rawHttpRequestMessage = readHttpRequestMessage(clientInput);
+        return HttpRequest.parse(rawHttpRequestMessage);
+    }
+
+    private String readHttpRequestMessage(InputStream clientInput) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(clientInput));
         StringBuilder sb = new StringBuilder();
         String readLine;
@@ -63,12 +79,24 @@ public class ClientRequest implements Runnable {
         return sb.toString();
     }
 
-    private byte[] getStaticFile(String resourcePath) throws IOException {
-        URL resource = getClass().getClassLoader().getResource(resourcePath);
-        try (FileInputStream fileInputStream = new FileInputStream(resource.getPath())) {
-            return fileInputStream.readAllBytes();
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("유효하지 않은 경로입니다. path=" + resourcePath);
+    private String getContentType(String requestUrl) {
+        if (!requestUrl.contains(".")) {
+            requestUrl = requestUrl + "/index.html";
         }
+        int extensionStartIndex = requestUrl.indexOf(".");
+        String fileNameExtension = requestUrl.substring(extensionStartIndex + 1);
+        return ContentTypes.getMimeType(fileNameExtension);
+    }
+
+    private void errorHandle(OutputStream clientOutput, Exception e) throws IOException {
+        HttpResponse httpResponse;
+        if (e instanceof IllegalArgumentException) {
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.BAD_REQUEST, "올바르지 않은 요청입니다.");
+        } else if (e instanceof NoSuchElementException) {
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.NOT_FOUND, "존재하지 않는 리소스입니다.");
+        } else {
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다.");
+        }
+        clientOutput.write(httpResponse.toHttpMessage().getBytes());
     }
 }

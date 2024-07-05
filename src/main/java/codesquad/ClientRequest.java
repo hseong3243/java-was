@@ -53,8 +53,9 @@ public class ClientRequest implements Runnable {
                     HTTP_1_1,
                     modelAndView.getStatusCode(),
                     modelAndView.getView());
+            httpResponse.addHeaders(modelAndView.getHeaders());
             httpResponse.addHeader("Content-Type", getContentType(requestMessage.requestUrl()));
-            clientOutput.write(httpResponse.toHttpMessage().getBytes());
+            writeHttpResponse(clientOutput, httpResponse);
             clientOutput.flush();
 
             clientSocket.close();
@@ -88,6 +89,13 @@ public class ClientRequest implements Runnable {
         return ContentTypes.getMimeType(fileNameExtension);
     }
 
+    private void writeHttpResponse(OutputStream clientOutput, HttpResponse httpResponse) throws IOException {
+        clientOutput.write(httpResponse.getHttpMessageStartLine());
+        clientOutput.write(httpResponse.getHttpMessageHeaders());
+        clientOutput.write("\r\n".getBytes());
+        clientOutput.write(httpResponse.getHttpMessageBody());
+    }
+
     private void errorHandle(OutputStream clientOutput, Exception e) throws IOException {
         HttpResponse httpResponse;
         if (e instanceof IllegalArgumentException) {
@@ -97,6 +105,7 @@ public class ClientRequest implements Runnable {
         } else {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다.");
         }
-        clientOutput.write(httpResponse.toHttpMessage().getBytes());
+        httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
+        writeHttpResponse(clientOutput, httpResponse);
     }
 }

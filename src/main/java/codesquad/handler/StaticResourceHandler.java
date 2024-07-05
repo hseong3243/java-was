@@ -12,8 +12,10 @@ public class StaticResourceHandler implements Handler {
     @Override
     public ModelAndView handle(HttpRequest httpRequest) {
         String viewPath = addIndexPath(httpRequest.requestUrl());
-        String view = getStaticFile(viewPath);
-        return new ModelAndView(view);
+        byte[] view = getStaticFile(viewPath);
+        ModelAndView modelAndView = new ModelAndView(view);
+        modelAndView.addHeader("Content-Length", String.valueOf(view.length));
+        return modelAndView;
     }
 
     private String addIndexPath(String requestUrl) {
@@ -26,10 +28,10 @@ public class StaticResourceHandler implements Handler {
         return requestUrl + "/index.html";
     }
 
-    private String getStaticFile(String resourcePath) {
+    private byte[] getStaticFile(String resourcePath) {
         try {
             InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("static" + resourcePath);
-            return new String(resourceAsStream.readAllBytes());
+            return resourceAsStream.readAllBytes();
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("유효하지 않은 경로입니다. path=" + resourcePath);
         } catch (IOException e) {

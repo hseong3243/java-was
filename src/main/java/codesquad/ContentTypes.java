@@ -14,7 +14,7 @@ public final class ContentTypes {
         MIME_TYPES.put("js", "text/javascript");
         MIME_TYPES.put("jpg", "image/jpeg");
         MIME_TYPES.put("png", "image/png");
-        MIME_TYPES.put("ico", "image/vnd.microsoft.icon");
+        MIME_TYPES.put("ico", "image/x-icon");
         MIME_TYPES.put("svg", "image/svg+xml");
     }
 

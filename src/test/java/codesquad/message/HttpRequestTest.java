@@ -19,10 +19,11 @@ class HttpRequestTest {
         void parseInputMessage() {
             //given
             String rawHttpMessage = """
-                    GET /index.html HTTP/1.1
-                    Host: localhost:8080
-                    Connection: keep-alive
-                    Cache-Control: max-age=0""";
+                    GET /index.html HTTP/1.1\r
+                    Host: localhost:8080\r
+                    Connection: keep-alive\r
+                    Cache-Control: max-age=0\r
+                    """;
 
             //when
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
@@ -41,10 +42,11 @@ class HttpRequestTest {
         void parseQueryString() {
             //given
             String rawHttpMessage = """
-                    GET /create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1
-                    Host: localhost:8080
-                    Connection: keep-alive
-                    Cache-Control: max-age=0""";
+                    GET /create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1\r
+                    Host: localhost:8080\r
+                    Connection: keep-alive\r
+                    Cache-Control: max-age=0\r
+                    """;
 
             //when
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
@@ -68,10 +70,11 @@ class HttpRequestTest {
         void asdf() {
             //given
             String rawHttpMessage = """
-                    GET /create? HTTP/1.1
-                    Host: localhost:8080
-                    Connection: keep-alive
-                    Cache-Control: max-age=0""";
+                    GET /create? HTTP/1.1\r
+                    Host: localhost:8080\r
+                    Connection: keep-alive\r
+                    Cache-Control: max-age=0\r
+                    """;
 
             //when
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
@@ -90,10 +93,11 @@ class HttpRequestTest {
         void illegalArgument_WhenQueryDoesNotHaveEqual() {
             //given
             String rawHttpMessage = """
-                    GET /create?key HTTP/1.1
-                    Host: localhost:8080
-                    Connection: keep-alive
-                    Cache-Control: max-age=0""";
+                    GET /create?key HTTP/1.1\r
+                    Host: localhost:8080\r
+                    Connection: keep-alive\r
+                    Cache-Control: max-age=0\r
+                    """;
 
             //when
             Exception exception = catchException(() -> HttpRequest.parse(rawHttpMessage));

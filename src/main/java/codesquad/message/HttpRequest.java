@@ -5,7 +5,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 public record HttpRequest(String method, String requestUrl,
                           Map<String, String> queries,
@@ -13,11 +12,15 @@ public record HttpRequest(String method, String requestUrl,
                           Map<String, String> header,
                           String body) {
 
+    private static final String CSRF = "\r\n";
+
     public static HttpRequest parse(String rawHttpMessage) {
-        StringTokenizer st = new StringTokenizer(rawHttpMessage);
-        String method = st.nextToken();
-        String requestUrl = st.nextToken();
-        String httpVersion = st.nextToken();
+        String[] splitMessage = rawHttpMessage.split(CSRF);
+
+        String[] startLineArr = splitMessage[0].split(" ");
+        String method = startLineArr[0];
+        String requestUrl = startLineArr[1];
+        String httpVersion = startLineArr[2];
 
         // 쿼리를 분리한다.
         URI uri = URI.create(requestUrl);
@@ -25,17 +28,15 @@ public record HttpRequest(String method, String requestUrl,
         requestUrl = uri.getPath();
 
         Map<String, String> header = new HashMap<>();
-        String key;
-        String value;
-        while (st.hasMoreTokens()) {
-            key = st.nextToken();
-            if (key.isBlank()) {
+        for(int i=1; i<splitMessage.length; i++) {
+            String rawHeader = splitMessage[i];
+            if(rawHeader.equals(CSRF)) {
                 break;
             }
-            key = key.replace(":", "");
-            value = st.nextToken();
-            header.put(key, value);
+            String[] splitHeader = rawHeader.split(": ");
+            header.put(splitHeader[0], splitHeader[1]);
         }
+
         return new HttpRequest(method, requestUrl, queries, httpVersion, header, "");
     }
 

@@ -27,7 +27,7 @@ public class CreateUserHandler implements Handler {
     }
 
     private Data queriesToData(HttpRequest httpRequest) {
-        Map<String, String> queries = httpRequest.queries();
+        Map<String, String> queries = httpRequest.bodyData();
         String userId = queries.get("userId");
         String password = queries.get("password");
         String name = queries.get("name");

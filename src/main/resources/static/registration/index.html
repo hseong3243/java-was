@@ -23,7 +23,7 @@
     </header>
     <div class="page">
         <h2 class="page-title">회원가입</h2>
-        <form class="form" action="/user/create" method="get" id="registration-form">
+        <form class="form" action="/user/create" method="post" id="registration-form">
             <div class="textfield textfield_size_s">
                 <p class="title_textfield">아이디</p>
                 <input
@@ -58,7 +58,7 @@
                     id="registration-btn"
                     class="btn btn_contained btn_size_m"
                     style="margin-top: 24px"
-                    type="button"
+                    type="submit"
             >
                 회원가입
             </button>
@@ -67,13 +67,3 @@
 </div>
 </body>
 </html>
-
-<script>
-    document.getElementById('registration-btn').addEventListener('click', function() {
-        const form = document.getElementById('registration-form');
-        const formData = new FormData(form);
-        const queryString = new URLSearchParams(formData).toString();
-        const actionUrl = form.getAttribute('action');
-        const url = `${actionUrl}?${queryString}`;
-        window.location.href = url;
-    });</script>

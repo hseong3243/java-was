@@ -66,7 +66,7 @@ class HttpRequestTest {
 
         @Test
         @DisplayName("?만 들어오면 무시한다.")
-        void asdf() {
+        void ignorePathHasQuestionMark() {
             //given
             String rawHttpMessage = """
                     GET /create? HTTP/1.1
@@ -103,6 +103,27 @@ class HttpRequestTest {
 
             //then
             assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("입력으로 주어진 HTTP POST 메시지를 파싱한다.")
+        void parsePostMessage() {
+            //given
+            String rawHttpMessage = """
+                    POST /user/create HTTP/1.1
+                    Host: localhost:8080
+                                        
+                    userId=userId&nickname=nickname""";
+
+            //when
+            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+
+            //then
+            assertThat(httpRequest.httpBody().data()).satisfies(data -> {
+                assertThat(data).hasSize(2);
+                assertThat(data.get("userId")).isNotNull().isEqualTo("userId");
+                assertThat(data.get("nickname")).isNotNull().isEqualTo("nickname");
+            });
         }
     }
 }

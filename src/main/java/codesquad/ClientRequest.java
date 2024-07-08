@@ -49,7 +49,7 @@ public class ClientRequest implements Runnable {
             log.debug("Client connected");
 
             // HTTP 요청을 파싱합니다.
-            HttpRequest requestMessage = getHttpRequest(inputStream);
+            HttpRequest requestMessage = readHttpRequestMessage(inputStream);
             log.debug("Http request message={}", requestMessage);
 
             // 요청을 처리할 핸들러를 조회합니다.
@@ -72,10 +72,6 @@ public class ClientRequest implements Runnable {
         }
     }
 
-    private HttpRequest getHttpRequest(InputStream inputStream) throws IOException {
-        return readHttpRequestMessage(inputStream);
-    }
-
     private HttpRequest readHttpRequestMessage(InputStream clientInput) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(clientInput));
         HttpStartLine httpStartLine = HttpStartLine.parse(br.readLine());
@@ -86,15 +82,14 @@ public class ClientRequest implements Runnable {
             headers.put(keyValue[0], keyValue[1]);
         }
         HttpHeaders httpHeaders = new HttpHeaders(headers);
+
         HttpBody httpBody = new HttpBody(new HashMap<>());
-        String contentType = headers.get("Content-Type");
-        if(contentType != null && contentType.equals("application/x-www-form-urlencoded")) {
+        if(httpHeaders.isFormData()) {
             int contentLength = Integer.parseInt(headers.get("Content-Length"));
             char[] buffer = new char[contentLength];
             br.read(buffer);
             String body = new String(buffer);
             httpBody = HttpBody.parse(body);
-            log.debug("바디= {}", body);
         }
         return new HttpRequest(httpStartLine, httpHeaders, httpBody);
     }

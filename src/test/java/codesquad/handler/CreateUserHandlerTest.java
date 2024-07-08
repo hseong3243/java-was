@@ -26,9 +26,9 @@ class CreateUserHandlerTest {
         void userCreate() {
             //given
             String rawHttpMessage = """
-                    GET /create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1
-                    Host: localhost:8080
-                    Connection: keep-alive
+                    GET /create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1\r
+                    Host: localhost:8080\r
+                    Connection: keep-alive\r
                     Cache-Control: max-age=0""";
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
 

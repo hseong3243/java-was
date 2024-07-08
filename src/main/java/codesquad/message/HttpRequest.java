@@ -1,65 +1,50 @@
 package codesquad.message;
 
-import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
-public record HttpRequest(String method, String requestUrl,
-                          Map<String, String> queries,
-                          String httpVersion,
-                          Map<String, String> header,
-                          String body) {
+public record HttpRequest(
+        HttpStartLine httpStartLine,
+        HttpHeaders httpHeaders,
+        String body) {
 
-    private static final String CSRF = "\r\n";
+    private static final String LINE_SEPARATOR = "\n";
 
     public static HttpRequest parse(String rawHttpMessage) {
-        String[] splitMessage = rawHttpMessage.split(CSRF);
+        String[] headAndBody = rawHttpMessage.split(LINE_SEPARATOR + LINE_SEPARATOR);
+        String httpHead = headAndBody[0];
 
-        String[] startLineArr = splitMessage[0].split(" ");
-        String method = startLineArr[0];
-        String requestUrl = startLineArr[1];
-        String httpVersion = startLineArr[2];
+        String[] splitHead = httpHead.split(LINE_SEPARATOR, 2);
+        String rawStartLine = splitHead[0];
+        HttpStartLine httpStartLine = HttpStartLine.parse(rawStartLine);
 
-        // 쿼리를 분리한다.
-        URI uri = URI.create(requestUrl);
-        Map<String, String> queries = getQueries(uri.getQuery());
-        requestUrl = uri.getPath();
+        String rawHttpHeaders = splitHead[1];
+        HttpHeaders httpHeaders = HttpHeaders.parse(rawHttpHeaders);
 
-        Map<String, String> header = new HashMap<>();
-        for(int i=1; i<splitMessage.length; i++) {
-            String rawHeader = splitMessage[i];
-            if(rawHeader.equals(CSRF)) {
-                break;
-            }
-            String[] splitHeader = rawHeader.split(": ");
-            header.put(splitHeader[0], splitHeader[1]);
+        if(headAndBody.length >= 2) {
+            String httpBody = headAndBody[1];
+
         }
 
-        return new HttpRequest(method, requestUrl, queries, httpVersion, header, "");
+        return new HttpRequest(httpStartLine, httpHeaders, "");
     }
 
-    private static Map<String, String> getQueries(String queryString) {
-        Map<String, String> queries = new HashMap<>();
-        if(queryString == null || queryString.isBlank()) {
-            return queries;
-        }
-        String[] keyValues = queryString.split("&");
-        for (String keyValue : keyValues) {
-            checkQuery(keyValue);
-            String[] keyAndValue = keyValue.split("=");
-            queries.put(
-                    URLDecoder.decode(keyAndValue[0], StandardCharsets.UTF_8),
-                    URLDecoder.decode(keyAndValue[1], StandardCharsets.UTF_8));
-        }
-        return queries;
+    public String method() {
+        return httpStartLine.method();
     }
 
-    private static void checkQuery(String keyValue) {
-        if (keyValue.contains("=")) {
-            return;
-        }
-        throw new IllegalArgumentException("쿼리 마라미터가 올바르지 않습니다.");
+    public String requestUrl() {
+        return httpStartLine.path();
+    }
+
+    public String httpVersion() {
+        return httpStartLine.version();
+    }
+
+    public Map<String, String> header() {
+        return httpHeaders.headers();
+    }
+
+    public Map<String, String> queries() {
+        return httpStartLine.queries();
     }
 }

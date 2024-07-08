@@ -22,8 +22,7 @@ class HttpRequestTest {
                     GET /index.html HTTP/1.1\r
                     Host: localhost:8080\r
                     Connection: keep-alive\r
-                    Cache-Control: max-age=0\r
-                    """;
+                    Cache-Control: max-age=0""";
 
             //when
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);

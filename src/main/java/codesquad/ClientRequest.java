@@ -92,7 +92,7 @@ public class ClientRequest implements Runnable {
     private void writeHttpResponse(OutputStream clientOutput, HttpResponse httpResponse) throws IOException {
         clientOutput.write(httpResponse.getHttpMessageStartLine());
         clientOutput.write(httpResponse.getHttpMessageHeaders());
-        clientOutput.write("\r\n".getBytes());
+        clientOutput.write("\n".getBytes());
         clientOutput.write(httpResponse.getHttpMessageBody());
     }
 

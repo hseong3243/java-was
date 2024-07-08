@@ -20,11 +20,11 @@ class HttpHeadersTest {
         void parseRawHttpHeaders() {
             //given
             String rawHeaders = """
-                    Accept: application/json\r
-                    Authorization: Bearer accessToken\r
-                    Host: localhost:8080\r
-                    Connection: keep-alive\r
-                    Accept-Language: en-US,en;q=0.5\r
+                    Accept: application/json
+                    Authorization: Bearer accessToken
+                    Host: localhost:8080
+                    Connection: keep-alive
+                    Accept-Language: en-US,en;q=0.5
                     Accept-Encoding: gzip, deflate""";
 
             //when

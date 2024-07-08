@@ -19,6 +19,10 @@ public class ModelAndView {
         this(view, HttpStatusCode.OK);
     }
 
+    public ModelAndView(HttpStatusCode statusCode) {
+        this(new byte[]{}, statusCode);
+    }
+
     public ModelAndView(byte[] view, HttpStatusCode statusCode) {
         this.view = view;
         this.statusCode = statusCode;

@@ -45,8 +45,8 @@ class HttpResponseTest {
             //then
             assertThat(httpMessageHeaders).asString()
                     .isEqualTo("""
-                            Content-Length: 10\r
-                            Content-Type: text/html\r
+                            Content-Length: 10
+                            Content-Type: text/html
                             """);
         }
     }
@@ -66,7 +66,7 @@ class HttpResponseTest {
 
             //then
             assertThat(httpMessageStartLine).asString()
-                    .isEqualTo("HTTP/1.1 200 OK" + "\r\n");
+                    .isEqualTo("HTTP/1.1 200 OK" + "\n");
         }
     }
 }

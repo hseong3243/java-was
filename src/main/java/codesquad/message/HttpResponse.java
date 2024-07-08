@@ -5,7 +5,7 @@ import java.util.Map;
 
 public final class HttpResponse {
 
-    public static final String CRLF = "\r\n";
+    public static final String CRLF = "\n";
 
     private final String version;
     private final HttpStatusCode statusCode;

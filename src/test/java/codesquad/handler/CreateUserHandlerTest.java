@@ -22,10 +22,12 @@ class CreateUserHandlerTest {
         void setUp() {
             createUserHandler = new CreateUserHandler();
             rawHttpMessage = """
-                    POST /create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1
+                    POST /create HTTP/1.1
                     Host: localhost:8080
                     Connection: keep-alive
-                    Cache-Control: max-age=0""";
+                    Cache-Control: max-age=0
+                    
+                    userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net""";
         }
 
         @Test

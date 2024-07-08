@@ -1,5 +1,6 @@
 package codesquad.handler;
 
+import codesquad.database.DataBase;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
 import codesquad.model.User;
@@ -23,6 +24,7 @@ public class CreateUserHandler implements Handler {
         ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/");
         modelAndView.add("userId", user.getUserId());
+        DataBase.addUser(user);
         return modelAndView;
     }
 

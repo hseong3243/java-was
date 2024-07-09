@@ -1,6 +1,7 @@
 package codesquad.handler;
 
 import codesquad.message.HttpRequest;
+import codesquad.message.HttpStatusCode;
 import codesquad.model.User;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -19,13 +20,14 @@ public class CreateUserHandler implements Handler {
         User user = User.create(data.userId, data.password, data.name, data.password);
         log.debug("새로운 유저가 생성되었습니다. userId={}", user.getUserId());
 
-        ModelAndView modelAndView = new ModelAndView();
+        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
+        modelAndView.addHeader("Location", "/");
         modelAndView.add("userId", user.getUserId());
         return modelAndView;
     }
 
     private Data queriesToData(HttpRequest httpRequest) {
-        Map<String, String> queries = httpRequest.queries();
+        Map<String, String> queries = httpRequest.bodyData();
         String userId = queries.get("userId");
         String password = queries.get("password");
         String name = queries.get("name");

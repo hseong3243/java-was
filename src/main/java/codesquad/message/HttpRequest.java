@@ -1,57 +1,60 @@
 package codesquad.message;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public record HttpRequest(String method, String requestUrl,
-                          Map<String, String> queries,
-                          String httpVersion,
-                          Map<String, String> header,
-                          String body) {
+public record HttpRequest(
+        HttpStartLine httpStartLine,
+        HttpHeaders httpHeaders,
+        HttpBody httpBody) {
+
+    private static final String LINE_SEPARATOR = "\n";
+    private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
+
 
     public static HttpRequest parse(String rawHttpMessage) {
-        StringTokenizer st = new StringTokenizer(rawHttpMessage);
-        String method = st.nextToken();
-        String requestUrl = st.nextToken();
-        String httpVersion = st.nextToken();
+        String[] headAndBody = rawHttpMessage.split(LINE_SEPARATOR + LINE_SEPARATOR);
+        String httpHead = headAndBody[0];
 
-        // 쿼리를 분리한다.
-        Map<String, String> queries = getQueries(requestUrl);
-        if (requestUrl.contains("?")) {
-            requestUrl = requestUrl.substring(0, requestUrl.indexOf("?"));
+        String[] splitHead = httpHead.split(LINE_SEPARATOR, 2);
+        String rawStartLine = splitHead[0];
+        HttpStartLine httpStartLine = HttpStartLine.parse(rawStartLine);
+
+        String rawHttpHeaders = splitHead[1];
+        HttpHeaders httpHeaders = HttpHeaders.parse(rawHttpHeaders);
+
+        if(headAndBody.length >= 2) {
+            String rawHttpBody = headAndBody[1];
+            HttpBody httpBody = HttpBody.parse(rawHttpBody);
+            return new HttpRequest(httpStartLine, httpHeaders, httpBody);
         }
 
-        Map<String, String> header = new HashMap<>();
-        String key;
-        String value;
-        while (st.hasMoreTokens()) {
-            key = st.nextToken();
-            if (key.isBlank()) {
-                break;
-            }
-            key = key.replace(":", "");
-            value = st.nextToken();
-            header.put(key, value);
-        }
-        return new HttpRequest(method, requestUrl, queries, httpVersion, header, "");
+        return new HttpRequest(httpStartLine, httpHeaders, new HttpBody(new HashMap<>()));
     }
 
-    private static Map<String, String> getQueries(String requestUrl) {
-        Map<String, String> queries = new HashMap<>();
-        int substringPoint = requestUrl.indexOf("?") + 1;
-        if (substringPoint == 0) {
-            return queries;
-        }
-        String[] keyValues = requestUrl.substring(substringPoint).split("&");
-        for (String keyValue : keyValues) {
-            String[] keyAndValue = keyValue.split("=");
-            queries.put(
-                    URLDecoder.decode(keyAndValue[0], StandardCharsets.UTF_8),
-                    URLDecoder.decode(keyAndValue[1], StandardCharsets.UTF_8));
-        }
-        return queries;
+    public String method() {
+        return httpStartLine.method();
+    }
+
+    public String requestUrl() {
+        return httpStartLine.path();
+    }
+
+    public String httpVersion() {
+        return httpStartLine.version();
+    }
+
+    public Map<String, String> header() {
+        return httpHeaders.headers();
+    }
+
+    public Map<String, String> queries() {
+        return httpStartLine.queries();
+    }
+
+    public Map<String, String> bodyData() {
+        return httpBody.data();
     }
 }

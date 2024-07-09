@@ -22,7 +22,7 @@ class ContentTypesTest {
                 "js, text/javascript",
                 "jpg, image/jpeg",
                 "png, image/png",
-                "ico, image/vnd.microsoft.icon",
+                "ico, image/x-icon",
                 "svg, image/svg+xml"
         })
         @DisplayName("컨텐츠 타입을 반환한다.")

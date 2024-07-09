@@ -3,6 +3,8 @@ package codesquad.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import codesquad.database.DataBase;
+import codesquad.fixture.HttpFixture;
+import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
 import codesquad.model.User;
@@ -24,13 +26,14 @@ class CreateUserHandlerTest {
         @BeforeEach
         void setUp() {
             createUserHandler = new CreateUserHandler();
-            rawHttpMessage = """
-                    POST /create HTTP/1.1
-                    Host: localhost:8080
-                    Connection: keep-alive
-                    Cache-Control: max-age=0
-                    
-                    userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net""";
+            rawHttpMessage = HttpFixture.builder()
+                    .method(HttpMethod.POST)
+                    .path("/create")
+                    .header("Host", "localhost:8080")
+                    .header("Connection", "keep-alive")
+                    .header("Cache-Control", "max-age=0")
+                    .body("userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net")
+                    .build();
         }
 
         @Test

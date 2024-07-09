@@ -111,6 +111,7 @@ public class ClientRequest implements Runnable {
     }
 
     private void errorHandle(OutputStream clientOutput, Exception e) throws IOException {
+        log.warn("예외가 발생했습니다.", e);
         HttpResponse httpResponse;
         if (e instanceof IllegalArgumentException) {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.BAD_REQUEST, "올바르지 않은 요청입니다.");

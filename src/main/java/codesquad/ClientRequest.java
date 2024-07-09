@@ -4,11 +4,13 @@ import codesquad.handler.Handler;
 import codesquad.handler.HandlerMapper;
 import codesquad.handler.ModelAndView;
 import codesquad.message.HttpBody;
+import codesquad.message.HttpCookies;
 import codesquad.message.HttpHeaders;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpResponse;
 import codesquad.message.HttpStartLine;
 import codesquad.message.HttpStatusCode;
+import codesquad.view.TemplateEngine;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,6 +84,7 @@ public class ClientRequest implements Runnable {
             headers.put(keyValue[0], keyValue[1]);
         }
         HttpHeaders httpHeaders = new HttpHeaders(headers);
+        HttpCookies httpCookies = HttpCookies.parse(httpHeaders.get("Cookie"));
 
         HttpBody httpBody = new HttpBody(new HashMap<>());
         if(httpHeaders.isFormData()) {
@@ -91,7 +94,7 @@ public class ClientRequest implements Runnable {
             String body = new String(buffer);
             httpBody = HttpBody.parse(body);
         }
-        return new HttpRequest(httpStartLine, httpHeaders, httpBody);
+        return new HttpRequest(httpStartLine, httpHeaders, httpCookies, httpBody);
     }
 
     private String getContentType(String requestUrl) {

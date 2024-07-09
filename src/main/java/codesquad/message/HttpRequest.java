@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 public record HttpRequest(
         HttpStartLine httpStartLine,
         HttpHeaders httpHeaders,
+        HttpCookies httpCookies,
         HttpBody httpBody) {
 
     private static final String LINE_SEPARATOR = "\n";
@@ -24,14 +25,15 @@ public record HttpRequest(
 
         String rawHttpHeaders = splitHead[1];
         HttpHeaders httpHeaders = HttpHeaders.parse(rawHttpHeaders);
+        HttpCookies httpCookies = HttpCookies.parse(httpHeaders.get("Cookie"));
 
         if(headAndBody.length >= 2) {
             String rawHttpBody = headAndBody[1];
             HttpBody httpBody = HttpBody.parse(rawHttpBody);
-            return new HttpRequest(httpStartLine, httpHeaders, httpBody);
+            return new HttpRequest(httpStartLine, httpHeaders, httpCookies, httpBody);
         }
 
-        return new HttpRequest(httpStartLine, httpHeaders, new HttpBody(new HashMap<>()));
+        return new HttpRequest(httpStartLine, httpHeaders, httpCookies, new HttpBody(new HashMap<>()));
     }
 
     public String method() {
@@ -56,5 +58,9 @@ public record HttpRequest(
 
     public Map<String, String> bodyData() {
         return httpBody.data();
+    }
+
+    public Map<String, String> cookies() {
+        return httpCookies.cookies();
     }
 }

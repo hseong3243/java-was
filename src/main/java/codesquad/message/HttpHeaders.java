@@ -39,4 +39,9 @@ public record HttpHeaders(Map<String, String> headers) {
     public String get(String key) {
         return headers.get(key);
     }
+
+    public boolean isFormData() {
+        String contentType = headers.get("Content-Type");
+        return contentType != null && contentType.equals("application/x-www-form-urlencoded");
+    }
 }

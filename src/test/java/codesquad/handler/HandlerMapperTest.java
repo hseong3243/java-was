@@ -70,7 +70,8 @@ class HandlerMapperTest {
 
         private static Stream<Arguments> findHandler() {
             return Stream.of(
-                    Arguments.arguments("/user/create", new CreateUserHandler())
+                    Arguments.arguments("/user/create", new CreateUserHandler(),
+                            Arguments.arguments("/login", new LoginHandler()))
             );
         }
     }

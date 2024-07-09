@@ -51,4 +51,13 @@ public class ModelAndView {
     public void addHeader(String key, String value) {
         headers.put(key, value);
     }
+
+    public void setCookie(String sessionId, String path, boolean httpOnly) {
+        StringBuilder sb = new StringBuilder("SID=").append(sessionId).append("; ")
+                .append("Path=").append(path);
+        if(httpOnly) {
+            sb.append("; ").append("HttpOnly");
+        }
+        headers.put("Set-Cookie", sb.toString());
+    }
 }

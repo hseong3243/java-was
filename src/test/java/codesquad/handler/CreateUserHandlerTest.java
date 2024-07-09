@@ -2,8 +2,11 @@ package codesquad.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import codesquad.database.DataBase;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
+import codesquad.model.User;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,8 +43,15 @@ class CreateUserHandlerTest {
             ModelAndView mav = createUserHandler.handle(httpRequest);
 
             //then
-            assertThat(mav.getModelValue("userId")).isNotNull().isEqualTo("javajigi");
-
+            assertThat(mav.getModelValue("userId")).isNotNull().satisfies(userId -> {
+                assertThat(userId).isEqualTo("javajigi");
+                Optional<User> optionalUser = DataBase.findUserByUserId(userId);
+                assertThat(optionalUser).isPresent().get().satisfies(user -> {
+                    assertThat(user.getUserId()).isEqualTo("javajigi");
+                    assertThat(user.getName()).isEqualTo("박재성");
+                    assertThat(user.getPassword()).isEqualTo("password");
+                });
+            });
         }
 
         @Test

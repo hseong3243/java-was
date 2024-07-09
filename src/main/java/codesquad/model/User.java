@@ -1,5 +1,7 @@
 package codesquad.model;
 
+import java.util.NoSuchElementException;
+
 public class User {
 
     private final String userId;
@@ -32,5 +34,12 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public void validatePassword(String password) {
+        if(this.password.equals(password)) {
+            return;
+        }
+        throw new NoSuchElementException("존재하지 않는 사용자입니다.");
     }
 }

@@ -58,11 +58,15 @@ public class ClientRequest implements Runnable {
             Handler handler = HandlerMapper.mapping(requestMessage);
             ModelAndView modelAndView = handler.handle(requestMessage);
 
+            // 뷰를 렌더링합니다.
+            String renderedView = TemplateEngine.render(new String(modelAndView.getView()), modelAndView);
+            modelAndView.addHeader("Content-Length", String.valueOf(renderedView.getBytes().length));
+
             // HTTP 응답을 생성합니다.
             HttpResponse httpResponse = new HttpResponse(
                     HTTP_1_1,
                     modelAndView.getStatusCode(),
-                    modelAndView.getView());
+                    renderedView);
             httpResponse.addHeaders(modelAndView.getHeaders());
             httpResponse.addHeader("Content-Type", getContentType(requestMessage.requestUrl()));
             writeHttpResponse(clientOutput, httpResponse);

@@ -60,4 +60,9 @@ public class ModelAndView {
         }
         headers.put("Set-Cookie", sb.toString());
     }
+
+    public void invalidateCookie() {
+        String sb = "SID=-1; Max-Age=0";
+        headers.put("Set-Cookie", sb);
+    }
 }

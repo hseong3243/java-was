@@ -8,17 +8,18 @@ import java.util.Optional;
 
 public final class HandlerMapper {
 
-    private static final Map<String, Handler> HANDLERS = new HashMap<>();
+    private static final Map<String, Handler> GET_HANDLERS = new HashMap<>();
     private static final Map<String, Handler> POST_HANDLERS = new HashMap<>();
 
     static {
+        GET_HANDLERS.put("/user/list", new ListUserHandler());
         POST_HANDLERS.put("/user/create", new CreateUserHandler());
         POST_HANDLERS.put("/login", new LoginHandler());
     }
 
     public static Handler mapping(HttpRequest httpRequest) {
         if(httpRequest.method().equals("GET")) {
-            return Optional.ofNullable(HANDLERS.get(httpRequest.requestUrl()))
+            return Optional.ofNullable(GET_HANDLERS.get(httpRequest.requestUrl()))
                     .orElse(new StaticResourceHandler());
         } else {
             return Optional.ofNullable(POST_HANDLERS.get(httpRequest.requestUrl()))

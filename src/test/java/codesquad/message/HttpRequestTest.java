@@ -28,7 +28,7 @@ class HttpRequestTest {
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
 
             //then
-            assertThat(httpRequest.method()).isEqualTo("GET");
+            assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
             assertThat(httpRequest.requestUrl()).isEqualTo("/index.html");
             assertThat(httpRequest.httpVersion()).isEqualTo("HTTP/1.1");
             assertThat(httpRequest.header().get("Host")).isEqualTo("localhost:8080");
@@ -51,7 +51,7 @@ class HttpRequestTest {
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
 
             //then
-            assertThat(httpRequest.method()).isEqualTo("GET");
+            assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
             assertThat(httpRequest.requestUrl()).isEqualTo("/create");
             assertThat(httpRequest.httpVersion()).isEqualTo("HTTP/1.1");
             assertThat(httpRequest.header().get("Host")).isEqualTo("localhost:8080");
@@ -79,7 +79,7 @@ class HttpRequestTest {
             HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
 
             //then
-            assertThat(httpRequest.method()).isEqualTo("GET");
+            assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
             assertThat(httpRequest.requestUrl()).isEqualTo("/create");
             assertThat(httpRequest.httpVersion()).isEqualTo("HTTP/1.1");
             assertThat(httpRequest.header().get("Host")).isEqualTo("localhost:8080");

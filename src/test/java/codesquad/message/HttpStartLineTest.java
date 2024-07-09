@@ -25,7 +25,7 @@ class HttpStartLineTest {
             HttpStartLine result = HttpStartLine.parse(rawHttpStartLine);
 
             //then
-            assertThat(result.method()).isEqualTo("GET");
+            assertThat(result.method()).isEqualTo(HttpMethod.GET);
             assertThat(result.path()).isEqualTo("/user/create");
             assertThat(result.version()).isEqualTo("HTTP/1.1");
             assertThat(result.queries()).satisfies(query -> {

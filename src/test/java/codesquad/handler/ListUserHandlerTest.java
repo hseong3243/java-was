@@ -8,6 +8,7 @@ import codesquad.fixture.UserFixture;
 import codesquad.message.HttpBody;
 import codesquad.message.HttpCookies;
 import codesquad.message.HttpHeaders;
+import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStartLine;
 import codesquad.message.HttpStatusCode;
@@ -38,7 +39,7 @@ class ListUserHandlerTest {
             DataBase.addUser(user);
             String sessionId = SessionStorage.store(user);
 
-            HttpStartLine startLine = new HttpStartLine("GET", "/user/list", new HashMap<>(), "HTTP/1.1");
+            HttpStartLine startLine = new HttpStartLine(HttpMethod.GET, "/user/list", new HashMap<>(), "HTTP/1.1");
             HttpHeaders httpHeaders = new HttpHeaders(new HashMap<>());
             cookies.put("SID", sessionId);
             HttpCookies httpCookies = new HttpCookies(cookies);

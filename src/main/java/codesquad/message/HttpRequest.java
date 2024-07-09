@@ -36,7 +36,7 @@ public record HttpRequest(
         return new HttpRequest(httpStartLine, httpHeaders, httpCookies, new HttpBody(new HashMap<>()));
     }
 
-    public String method() {
+    public HttpMethod method() {
         return httpStartLine.method();
     }
 

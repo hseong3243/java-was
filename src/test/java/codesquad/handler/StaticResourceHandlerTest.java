@@ -7,6 +7,7 @@ import codesquad.database.SessionStorage;
 import codesquad.message.HttpBody;
 import codesquad.message.HttpCookies;
 import codesquad.message.HttpHeaders;
+import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStartLine;
 import codesquad.model.User;
@@ -54,7 +55,7 @@ class StaticResourceHandlerTest {
 
             @BeforeEach
             void setUp() {
-                httpStartLine = new HttpStartLine("GET", "/", new HashMap<>(), "HTTP/1.1");
+                httpStartLine = new HttpStartLine(HttpMethod.GET, "/", new HashMap<>(), "HTTP/1.1");
                 headers = new HashMap<>();
                 httpHeaders = new HttpHeaders(headers);
                 httpBody = new HttpBody(new HashMap<>());
@@ -106,7 +107,7 @@ class StaticResourceHandlerTest {
 
             @BeforeEach
             void setUp() {
-                httpStartLine = new HttpStartLine("GET", "/favicon.ico", new HashMap<>(), "HTTP/1.1");
+                httpStartLine = new HttpStartLine(HttpMethod.GET, "/favicon.ico", new HashMap<>(), "HTTP/1.1");
                 headers = new HashMap<>();
                 httpHeaders = new HttpHeaders(headers);
                 httpBody = new HttpBody(new HashMap<>());

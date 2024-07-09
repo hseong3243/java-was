@@ -7,13 +7,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public record HttpStartLine(String method, String path, Map<String, String> queries, String version) {
+public record HttpStartLine(HttpMethod method, String path, Map<String, String> queries, String version) {
 
     public static HttpStartLine parse(String rawStartLine) {
         String[] splitLine = rawStartLine.split(" ");
         checkFormat(splitLine);
 
-        String method = splitLine[0];
+        HttpMethod httpMethod = HttpMethod.find(splitLine[0]);
         String pathWithQueries = splitLine[1];
         String version = splitLine[2];
 
@@ -21,7 +21,7 @@ public record HttpStartLine(String method, String path, Map<String, String> quer
         String path = uri.getPath();
         String queryString = uri.getQuery();
         Map<String, String> queries = parseQueries(queryString);
-        return new HttpStartLine(method, path, queries, version);
+        return new HttpStartLine(httpMethod, path, queries, version);
     }
 
     private static void checkFormat(String[] splitLine) {

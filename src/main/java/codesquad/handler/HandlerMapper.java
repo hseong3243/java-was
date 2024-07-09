@@ -1,5 +1,6 @@
 package codesquad.handler;
 
+import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,7 @@ public final class HandlerMapper {
     }
 
     public static Handler mapping(HttpRequest httpRequest) {
-        if(httpRequest.method().equals("GET")) {
+        if(httpRequest.method().equals(HttpMethod.GET)) {
             return Optional.ofNullable(GET_HANDLERS.get(httpRequest.requestUrl()))
                     .orElse(new StaticResourceHandler());
         } else {

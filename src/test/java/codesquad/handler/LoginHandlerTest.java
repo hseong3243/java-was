@@ -8,6 +8,8 @@ import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
 import codesquad.model.User;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,7 +40,8 @@ class LoginHandlerTest {
         @DisplayName("로그인에 성공하면 메인 페이지로 리다이렉트한다.")
         void redirectToMain() {
             //given
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             ModelAndView mav = loginHandler.handle(httpRequest);
@@ -54,7 +57,8 @@ class LoginHandlerTest {
         @DisplayName("로그인에 성공하면 쿠키를 반환한다.")
         void returnLoginCookie() {
             //given
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             ModelAndView mav = loginHandler.handle(httpRequest);
@@ -77,7 +81,8 @@ class LoginHandlerTest {
                     .path("/login")
                     .body("userId=nope&password=nope")
                     .build();
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             ModelAndView mav = loginHandler.handle(httpRequest);
@@ -98,7 +103,8 @@ class LoginHandlerTest {
                     .path("/login")
                     .body("userId=userId&password=nope")
                     .build();
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             ModelAndView mav = loginHandler.handle(httpRequest);

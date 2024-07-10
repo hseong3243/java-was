@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.catchException;
 import codesquad.fixture.HttpFixture;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +32,8 @@ class HandlerMapperTest {
                     .path("/user")
                     .header("Accept", "application/json")
                     .build();
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             Exception exception = catchException(() -> HandlerMapper.mapping(httpRequest));
@@ -48,7 +51,8 @@ class HandlerMapperTest {
                     .path("/user")
                     .header("Accept", "application/json")
                     .build();
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             Handler handler = HandlerMapper.mapping(httpRequest);
@@ -67,7 +71,8 @@ class HandlerMapperTest {
                     .path("/user/create")
                     .header("Accept", "application/json")
                     .build();
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             Handler handler = HandlerMapper.mapping(httpRequest);

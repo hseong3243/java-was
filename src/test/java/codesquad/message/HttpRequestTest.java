@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.fixture.HttpFixture;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,9 +28,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //then
             assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
@@ -50,9 +53,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //then
             assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
@@ -79,9 +83,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //then
             assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
@@ -103,9 +108,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
-            Exception exception = catchException(() -> HttpRequest.parse(rawHttpMessage));
+            Exception exception = catchException(() -> HttpRequest.parse(br));
 
             //then
             assertThat(exception).isInstanceOf(IllegalArgumentException.class);
@@ -121,9 +127,10 @@ class HttpRequestTest {
                     .header("Host", "localhost:8080")
                     .body("userId=userId&nickname=nickname")
                     .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //then
             assertThat(httpRequest.httpBody().data()).satisfies(data -> {

@@ -1,6 +1,7 @@
 package codesquad.message;
 
-import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,29 +12,22 @@ public record HttpRequest(
         HttpCookies httpCookies,
         HttpBody httpBody) {
 
-    private static final String LINE_SEPARATOR = "\n";
     private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
-
-    public static HttpRequest parse(String rawHttpMessage) {
-        String[] headAndBody = rawHttpMessage.split(LINE_SEPARATOR + LINE_SEPARATOR);
-        String httpHead = headAndBody[0];
-
-        String[] splitHead = httpHead.split(LINE_SEPARATOR, 2);
-        String rawStartLine = splitHead[0];
-        HttpStartLine httpStartLine = HttpStartLine.parse(rawStartLine);
-
-        String rawHttpHeaders = splitHead[1];
-        HttpHeaders httpHeaders = HttpHeaders.parse(rawHttpHeaders);
-        HttpCookies httpCookies = HttpCookies.parse(httpHeaders.get("Cookie"));
-
-        if(headAndBody.length >= 2) {
-            String rawHttpBody = headAndBody[1];
-            HttpBody httpBody = HttpBody.parse(rawHttpBody);
-            return new HttpRequest(httpStartLine, httpHeaders, httpCookies, httpBody);
+    public static HttpRequest parse(BufferedReader br) {
+        try {
+            return parseInner(br);
+        } catch (IOException e) {
+            throw new RuntimeIOException(e);
         }
+    }
 
-        return new HttpRequest(httpStartLine, httpHeaders, httpCookies, new HttpBody(new HashMap<>()));
+    private static HttpRequest parseInner(BufferedReader br) throws IOException {
+        HttpStartLine httpStartLine = HttpStartLine.parse(br.readLine());
+        HttpHeaders httpHeaders = HttpHeaders.parse(br);
+        HttpCookies httpCookies = HttpCookies.parse(httpHeaders);
+        HttpBody httpBody = HttpBody.parse(br, httpHeaders);
+        return new HttpRequest(httpStartLine, httpHeaders, httpCookies, httpBody);
     }
 
     public HttpMethod method() {

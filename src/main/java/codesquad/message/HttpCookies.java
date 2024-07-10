@@ -5,13 +5,14 @@ import java.util.Map;
 
 public record HttpCookies(Map<String, String> cookies) {
 
-    public static HttpCookies parse(String rawCookies) {
+    public static HttpCookies parse(HttpHeaders httpHeaders) {
+        String rawCookie = httpHeaders.get("Cookie").orElse("");
         Map<String, String> cookies = new HashMap<>();
-        if(rawCookies == null || rawCookies.isBlank()) {
+        if(rawCookie.isBlank()) {
             return new HttpCookies(cookies);
         }
 
-        String[] splitCookies = rawCookies.split(";");
+        String[] splitCookies = rawCookie.split(";");
         for (String cookie : splitCookies) {
             String[] keyValue = cookie.trim().split("=");
             if(keyValue.length != 2) {

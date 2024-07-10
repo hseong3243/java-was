@@ -8,6 +8,8 @@ import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
 import codesquad.model.User;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +42,8 @@ class CreateUserHandlerTest {
         @DisplayName("사용자가 생성된다.")
         void userCreate() {
             //given
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             ModelAndView mav = createUserHandler.handle(httpRequest);
@@ -61,7 +64,8 @@ class CreateUserHandlerTest {
         @DisplayName("/index.html 페이지로 리다이렉트한다.")
         void redirectToIndexPage() {
             //given
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             ModelAndView mav = createUserHandler.handle(httpRequest);

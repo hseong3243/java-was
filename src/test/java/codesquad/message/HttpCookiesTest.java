@@ -2,6 +2,8 @@ package codesquad.message;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,9 +19,12 @@ class HttpCookiesTest {
         void parse() {
             //given
             String cookieHeader = "Test=asdfasdfasdfasd-asdf; SID=f31c4a90-8477-477f-913d-edf73bd62409";
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Cookie", cookieHeader);
+            HttpHeaders httpHeaders = new HttpHeaders(headers);
 
             //when
-            HttpCookies httpCookies = HttpCookies.parse(cookieHeader);
+            HttpCookies httpCookies = HttpCookies.parse(httpHeaders);
 
             //then
             assertThat(httpCookies.cookies()).satisfies(cookies -> {
@@ -34,9 +39,12 @@ class HttpCookiesTest {
         void returnEmpty() {
             //given
             String cookieHeader = "";
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Cookie", cookieHeader);
+            HttpHeaders httpHeaders = new HttpHeaders(headers);
 
             //when
-            HttpCookies httpCookies = HttpCookies.parse(cookieHeader);
+            HttpCookies httpCookies = HttpCookies.parse(httpHeaders);
 
             //then
             assertThat(httpCookies.cookies()).isEmpty();

@@ -65,7 +65,8 @@ public class ClientRequest implements Runnable {
                     renderedView);
             httpResponse.addHeaders(modelAndView.getHeaders());
             httpResponse.addHeader("Content-Type", getContentType(httpRequest.requestUrl()));
-            writeHttpResponse(clientOutput, httpResponse);
+            httpResponse.write(clientOutput);
+
             clientOutput.flush();
 
             clientSocket.close();
@@ -83,13 +84,6 @@ public class ClientRequest implements Runnable {
         return ContentTypes.getMimeType(fileNameExtension);
     }
 
-    private void writeHttpResponse(OutputStream clientOutput, HttpResponse httpResponse) throws IOException {
-        clientOutput.write(httpResponse.getHttpMessageStartLine());
-        clientOutput.write(httpResponse.getHttpMessageHeaders());
-        clientOutput.write("\n".getBytes());
-        clientOutput.write(httpResponse.getHttpMessageBody());
-    }
-
     private void errorHandle(OutputStream clientOutput, Exception e) throws IOException {
         log.warn("예외가 발생했습니다.", e);
         HttpResponse httpResponse;
@@ -103,6 +97,6 @@ public class ClientRequest implements Runnable {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다.");
         }
         httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
-        writeHttpResponse(clientOutput, httpResponse);
+        httpResponse.write(clientOutput);
     }
 }

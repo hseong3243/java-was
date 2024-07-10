@@ -3,11 +3,17 @@ package codesquad.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
+import codesquad.database.UserDatabase;
+import codesquad.database.UserSessionStorage;
 import codesquad.handler.UserHandler;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class BeanFactoryTest {
 
@@ -20,6 +26,27 @@ class BeanFactoryTest {
         @BeforeEach
         void setUp() {
             beanFactory = new BeanFactory();
+        }
+
+        @ParameterizedTest
+        @MethodSource("databaseConfig")
+        @DisplayName("DatabaseConfig가 등록된다.")
+        void registerDatabaseConfig(Class<?> clazz, String className) {
+            //given
+
+            //when
+            beanFactory.start();
+
+            //then
+            Object bean = beanFactory.getBean(clazz);
+            assertThat(bean.getClass().getSimpleName()).isEqualTo(className);
+        }
+
+        private static Stream<Arguments> databaseConfig() {
+            return Stream.of(
+                    Arguments.arguments(UserDatabase.class, "UserDatabase"),
+                    Arguments.arguments(UserSessionStorage.class, "UserSessionStorage")
+            );
         }
 
         @Test

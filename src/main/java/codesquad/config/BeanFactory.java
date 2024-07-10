@@ -12,6 +12,7 @@ public class BeanFactory {
 
     public void start() {
         try {
+            register(DatabaseConfig.class);
             register(HandlerConfig.class);
         } catch (Exception e) {
             throw new RuntimeException("리플렉션 에러 발생", e);
@@ -20,8 +21,11 @@ public class BeanFactory {
 
     private void register(Class<?> clazz)
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        // 기본 생성자 획득
         Constructor<?> constructor = clazz.getConstructor();
         Object configObj = constructor.newInstance();
+
+        // 퍼블릭 메서드 순회
         for (Method method : clazz.getMethods()) {
             if(!method.isAnnotationPresent(Bean.class)) {
                 continue;
@@ -30,7 +34,15 @@ public class BeanFactory {
                 continue;
             }
             String beanName = method.getName();
-            Object bean = method.invoke(configObj);
+
+            // 메서드 파라미터로 사용할 빈 조회
+            Object[] parameters = new Object[method.getParameterCount()];
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            for(int i=0; i<parameters.length; i++) {
+                Object bean = getBean(parameterTypes[i]);
+                parameters[i] = bean;
+            }
+            Object bean = method.invoke(configObj, parameters);
             context.put(beanName, bean);
         }
     }
@@ -46,4 +58,8 @@ public class BeanFactory {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 빈입니다."));
     }
+
+//    public List<Object> getBeans() {
+//        return context.values().stream().toList();
+//    }
 }

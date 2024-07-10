@@ -1,5 +1,6 @@
 package codesquad;
 
+import codesquad.config.BeanFactory;
 import codesquad.handler.Handler;
 import codesquad.handler.HandlerMapper;
 import codesquad.handler.ModelAndView;
@@ -49,6 +50,10 @@ public class ClientRequest implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(clientInput));
             HttpRequest httpRequest = HttpRequest.parse(br);
             log.debug("Http request message={}", httpRequest);
+
+            // 컨텍스트를 초기화합니다.
+            BeanFactory beanFactory = new BeanFactory();
+            beanFactory.start();
 
             // 요청을 처리할 핸들러를 조회합니다.
             Handler handler = HandlerMapper.mapping(httpRequest);

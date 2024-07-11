@@ -4,11 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import codesquad.model.User;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class DataBaseTest {
+
+    private Database database;
+
+    @BeforeEach
+    void setUp() {
+        database = new Database();
+    }
 
     @Nested
     @DisplayName("addUser 호출 시")
@@ -21,10 +29,10 @@ class DataBaseTest {
             User user = User.create("userId", "password", "name", "email@email.com");
 
             //when
-            DataBase.addUser(user);
+            database.addUser(user);
 
             //then
-            Optional<User> optionalUser = DataBase.findUserByUserId("userId");
+            Optional<User> optionalUser = database.findUserByUserId("userId");
             assertThat(optionalUser).isPresent().get().satisfies(findUser -> {
                 assertThat(findUser.getUserId()).isEqualTo("userId");
                 assertThat(findUser.getPassword()).isEqualTo("password");

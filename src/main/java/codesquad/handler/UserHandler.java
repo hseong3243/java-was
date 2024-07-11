@@ -1,7 +1,7 @@
 package codesquad.handler;
 
-import codesquad.database.UserDatabase;
-import codesquad.database.UserSessionStorage;
+import codesquad.database.Database;
+import codesquad.database.SessionStorage;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
@@ -16,12 +16,12 @@ public class UserHandler {
 
     private static final Logger log = LoggerFactory.getLogger(UserHandler.class);
 
-    private final UserDatabase userDatabase;
-    private final UserSessionStorage userSessionStorage;
+    private final Database database;
+    private final SessionStorage sessionStorage;
 
-    public UserHandler(UserDatabase userDatabase, UserSessionStorage userSessionStorage) {
-        this.userDatabase = userDatabase;
-        this.userSessionStorage = userSessionStorage;
+    public UserHandler(Database database, SessionStorage sessionStorage) {
+        this.database = database;
+        this.sessionStorage = sessionStorage;
     }
 
     private record Data(String userId, String password, String name, String email) {
@@ -36,7 +36,7 @@ public class UserHandler {
         ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/");
         modelAndView.add("userId", user.getUserId());
-        userDatabase.addUser(user);
+        database.addUser(user);
         return modelAndView;
     }
 
@@ -58,10 +58,10 @@ public class UserHandler {
             return mav;
         }
 
-        userSessionStorage.findLoginUser(sessionId)
+        sessionStorage.findLoginUser(sessionId)
                 .orElseThrow(() -> new NoSuchElementException("세션 정보가 유효하지 않습니다."));
         StringBuilder sb = new StringBuilder();
-        for (User user : userDatabase.findAll()) {
+        for (User user : database.findAll()) {
             sb.append("[UserId=").append(user.getUserId()).append(", ")
                     .append("Name=").append(user.getName()).append(", ")
                     .append("Email=").append(user.getEmail()).append("]")

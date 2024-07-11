@@ -3,8 +3,8 @@ package codesquad.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
-import codesquad.database.UserDatabase;
-import codesquad.database.UserSessionStorage;
+import codesquad.database.Database;
+import codesquad.database.SessionStorage;
 import codesquad.handler.UserHandler;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ class BeanFactoryTest {
         @ParameterizedTest
         @MethodSource("databaseConfig")
         @DisplayName("DatabaseConfig가 등록된다.")
-        void registerDatabaseConfig(Class<?> clazz, String className) {
+        void registerDatabaseConfig(Class<?> clazz) {
             //given
 
             //when
@@ -39,13 +39,13 @@ class BeanFactoryTest {
 
             //then
             Object bean = beanFactory.getBean(clazz);
-            assertThat(bean.getClass().getSimpleName()).isEqualTo(className);
+            assertThat(bean).isInstanceOf(clazz);
         }
 
         private static Stream<Arguments> databaseConfig() {
             return Stream.of(
-                    Arguments.arguments(UserDatabase.class, "UserDatabase"),
-                    Arguments.arguments(UserSessionStorage.class, "UserSessionStorage")
+                    Arguments.arguments(Database.class),
+                    Arguments.arguments(SessionStorage.class)
             );
         }
 

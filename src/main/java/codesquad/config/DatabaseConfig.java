@@ -1,17 +1,17 @@
 package codesquad.config;
 
-import codesquad.database.UserDatabase;
-import codesquad.database.UserSessionStorage;
+import codesquad.database.Database;
+import codesquad.database.SessionStorage;
 
 public class DatabaseConfig {
 
     @Bean
-    public UserDatabase userDatabase() {
-        return new UserDatabase();
+    public Database userDatabase() {
+        return new Database();
     }
 
     @Bean
-    public UserSessionStorage userSessionStorage() {
-        return new UserSessionStorage();
+    public SessionStorage userSessionStorage() {
+        return new SessionStorage();
     }
 }

@@ -2,8 +2,8 @@ package codesquad.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.database.UserDatabase;
-import codesquad.database.UserSessionStorage;
+import codesquad.database.Database;
+import codesquad.database.SessionStorage;
 import codesquad.fixture.HttpFixture;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
@@ -23,16 +23,16 @@ class LoginHandlerTest {
     class HandleTest {
 
         private LoginHandler loginHandler;
-        private UserDatabase userDatabase;
-        private UserSessionStorage userSessionStorage;
+        private Database database;
+        private SessionStorage sessionStorage;
         private HttpRequest httpRequest;
         private User user;
 
         @BeforeEach
         void setUp() {
-            userDatabase = new UserDatabase();
-            userSessionStorage = new UserSessionStorage();
-            loginHandler = new LoginHandler(userDatabase, userSessionStorage);
+            database = new Database();
+            sessionStorage = new SessionStorage();
+            loginHandler = new LoginHandler(database, sessionStorage);
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.POST)
                     .path("/login")
@@ -41,7 +41,7 @@ class LoginHandlerTest {
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             httpRequest = HttpRequest.parse(br);
             user = User.create("userId", "password", "name", "email@email.com");
-            userDatabase.addUser(user);
+            database.addUser(user);
         }
 
         @Test

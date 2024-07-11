@@ -1,7 +1,7 @@
 package codesquad.handler;
 
-import codesquad.database.UserDatabase;
-import codesquad.database.UserSessionStorage;
+import codesquad.database.Database;
+import codesquad.database.SessionStorage;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
@@ -11,12 +11,12 @@ import java.util.NoSuchElementException;
 
 public class MainHandler {
 
-    private final UserDatabase userDatabase;
-    private final UserSessionStorage userSessionStorage;
+    private final Database database;
+    private final SessionStorage sessionStorage;
 
-    public MainHandler(UserDatabase userDatabase, UserSessionStorage userSessionStorage) {
-        this.userDatabase = userDatabase;
-        this.userSessionStorage = userSessionStorage;
+    public MainHandler(Database database, SessionStorage sessionStorage) {
+        this.database = database;
+        this.sessionStorage = sessionStorage;
     }
 
     @RequestMapping(method = HttpMethod.GET, path = "/")
@@ -24,9 +24,9 @@ public class MainHandler {
         String sessionId = httpRequest.cookies().get("SID");
         ModelAndView modelAndView = new ModelAndView(ResourceUtils.getStaticFile("/index.html"), HttpStatusCode.OK);
         if(sessionId != null) {
-            String userId = userSessionStorage.findLoginUser(sessionId)
+            String userId = sessionStorage.findLoginUser(sessionId)
                     .orElseThrow(() -> new NoSuchElementException("세션이 유효하지 않습니다."));
-            User user = userDatabase.findUserByUserId(userId)
+            User user = database.findUserByUserId(userId)
                     .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
             modelAndView.add("userId", user.getUserId());
             modelAndView.add("name", user.getName());

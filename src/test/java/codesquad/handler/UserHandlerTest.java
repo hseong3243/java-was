@@ -2,8 +2,8 @@ package codesquad.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.database.UserDatabase;
-import codesquad.database.UserSessionStorage;
+import codesquad.database.Database;
+import codesquad.database.SessionStorage;
 import codesquad.fixture.HttpFixture;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
@@ -19,15 +19,15 @@ import org.junit.jupiter.api.Test;
 
 class UserHandlerTest {
 
-    private UserDatabase userDatabase;
+    private Database database;
     private UserHandler userHandler;
-    private UserSessionStorage userSessionStorage;
+    private SessionStorage sessionStorage;
 
     @BeforeEach
     void setUp() {
-        userDatabase = new UserDatabase();
-        userSessionStorage = new UserSessionStorage();
-        userHandler = new UserHandler(userDatabase, userSessionStorage);
+        database = new Database();
+        sessionStorage = new SessionStorage();
+        userHandler = new UserHandler(database, sessionStorage);
     }
 
     @Nested
@@ -55,7 +55,7 @@ class UserHandlerTest {
             ModelAndView mav = userHandler.createUser(httpRequest);
 
             //then
-            Optional<User> optionalUser = userDatabase.findUserByUserId(mav.getModelValue("userId"));
+            Optional<User> optionalUser = database.findUserByUserId(mav.getModelValue("userId"));
             assertThat(optionalUser).isNotEmpty().get()
                     .satisfies(user -> {
                         assertThat(user.getUserId()).isEqualTo("userId");
@@ -89,8 +89,8 @@ class UserHandlerTest {
         @BeforeEach
         void setUp() {
             User user = User.create("userId", "password", "name", "email@email.com");
-            userDatabase.addUser(user);
-            String sessionId = userSessionStorage.store(user);
+            database.addUser(user);
+            String sessionId = sessionStorage.store(user);
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/user/list")
                     .cookie("SID", sessionId)

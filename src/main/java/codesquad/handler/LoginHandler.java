@@ -1,7 +1,7 @@
 package codesquad.handler;
 
-import codesquad.database.UserDatabase;
-import codesquad.database.UserSessionStorage;
+import codesquad.database.Database;
+import codesquad.database.SessionStorage;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
@@ -11,12 +11,12 @@ import java.util.NoSuchElementException;
 
 public class LoginHandler {
 
-    private final UserDatabase userDatabase;
-    private final UserSessionStorage userSessionStorage;
+    private final Database database;
+    private final SessionStorage sessionStorage;
 
-    public LoginHandler(UserDatabase userDatabase, UserSessionStorage userSessionStorage) {
-        this.userDatabase = userDatabase;
-        this.userSessionStorage = userSessionStorage;
+    public LoginHandler(Database database, SessionStorage sessionStorage) {
+        this.database = database;
+        this.sessionStorage = sessionStorage;
     }
 
     @RequestMapping(method = HttpMethod.POST, path = "/login")
@@ -24,7 +24,7 @@ public class LoginHandler {
         Data data = Data.from(httpRequest);
         User user;
         try {
-            user = userDatabase.findUserByUserId(data.userId)
+            user = database.findUserByUserId(data.userId)
                     .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
             user.validatePassword(data.password);
         } catch (NoSuchElementException e) {
@@ -35,7 +35,7 @@ public class LoginHandler {
 
         ModelAndView mav = new ModelAndView(HttpStatusCode.FOUND);
         mav.addHeader("Location", "/");
-        mav.setCookie(userSessionStorage.store(user), "/", true);
+        mav.setCookie(sessionStorage.store(user), "/", true);
         return mav;
     }
 

@@ -8,19 +8,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionStorage {
 
-    private static final Map<String, String> STORAGE = new ConcurrentHashMap<>();
+    private final Map<String, String> storage = new ConcurrentHashMap<>();
 
-    public static String store(User user) {
+    public String store(User user) {
         String sid = UUID.randomUUID().toString();
-        STORAGE.put(sid, user.getUserId());
+        storage.put(sid, user.getUserId());
         return sid;
     }
 
-    public static Optional<String> findLoginUser(String sessionId) {
-        return Optional.ofNullable(STORAGE.get(sessionId));
+    public Optional<String> findLoginUser(String sessionId) {
+        return Optional.ofNullable(storage.get(sessionId));
     }
 
-    public static boolean isValid(String sessionId) {
+    public boolean isValid(String sessionId) {
         return findLoginUser(sessionId).isPresent();
     }
 }

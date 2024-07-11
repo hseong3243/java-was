@@ -2,7 +2,7 @@ package codesquad.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.handler.ModelAndView;
+import codesquad.web.ModelAndView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

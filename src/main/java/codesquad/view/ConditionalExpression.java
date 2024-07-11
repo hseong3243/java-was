@@ -1,6 +1,6 @@
 package codesquad.view;
 
-import codesquad.handler.ModelAndView;
+import codesquad.web.ModelAndView;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

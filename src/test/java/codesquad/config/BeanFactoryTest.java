@@ -3,6 +3,7 @@ package codesquad.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
+import codesquad.bean.BeanFactory;
 import codesquad.database.Database;
 import codesquad.database.SessionStorage;
 import codesquad.handler.UserHandler;

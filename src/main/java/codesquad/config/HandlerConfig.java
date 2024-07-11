@@ -1,9 +1,10 @@
 package codesquad.config;
 
+import codesquad.bean.Bean;
 import codesquad.database.Database;
 import codesquad.database.SessionStorage;
 import codesquad.handler.MainHandler;
-import codesquad.handler.StaticResourceHandler;
+import codesquad.web.StaticResourceHandler;
 import codesquad.handler.UserHandler;
 import codesquad.handler.LoginHandler;
 

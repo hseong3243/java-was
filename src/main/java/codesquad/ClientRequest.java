@@ -1,8 +1,8 @@
 package codesquad;
 
-import codesquad.handler.AnnotationHandlerMapping;
-import codesquad.handler.HandlerMethod;
-import codesquad.handler.ModelAndView;
+import codesquad.web.AnnotationHandlerMapping;
+import codesquad.web.HandlerMethod;
+import codesquad.web.ModelAndView;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpResponse;
 import codesquad.message.HttpStatusCode;

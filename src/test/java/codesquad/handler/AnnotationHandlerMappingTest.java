@@ -2,10 +2,12 @@ package codesquad.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.config.BeanFactory;
+import codesquad.bean.BeanFactory;
 import codesquad.fixture.HttpFixture;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
+import codesquad.web.AnnotationHandlerMapping;
+import codesquad.web.HandlerMethod;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import org.junit.jupiter.api.BeforeEach;

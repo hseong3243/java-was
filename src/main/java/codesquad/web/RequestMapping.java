@@ -1,4 +1,4 @@
-package codesquad.handler;
+package codesquad.web;
 
 import codesquad.message.HttpMethod;
 import java.lang.annotation.ElementType;

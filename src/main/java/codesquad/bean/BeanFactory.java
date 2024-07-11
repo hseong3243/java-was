@@ -1,5 +1,7 @@
-package codesquad.config;
+package codesquad.bean;
 
+import codesquad.config.DatabaseConfig;
+import codesquad.config.HandlerConfig;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

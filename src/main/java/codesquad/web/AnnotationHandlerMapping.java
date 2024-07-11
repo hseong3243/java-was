@@ -1,6 +1,6 @@
-package codesquad.handler;
+package codesquad.web;
 
-import codesquad.config.BeanFactory;
+import codesquad.bean.BeanFactory;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import java.lang.reflect.Method;

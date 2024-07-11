@@ -1,5 +1,6 @@
 package codesquad.config;
 
+import codesquad.bean.Bean;
 import codesquad.database.Database;
 import codesquad.database.SessionStorage;
 

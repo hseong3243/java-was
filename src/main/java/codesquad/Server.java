@@ -1,7 +1,7 @@
 package codesquad;
 
-import codesquad.config.BeanFactory;
-import codesquad.handler.AnnotationHandlerMapping;
+import codesquad.bean.BeanFactory;
+import codesquad.web.AnnotationHandlerMapping;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

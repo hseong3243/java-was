@@ -2,6 +2,7 @@ package codesquad;
 
 import codesquad.bean.BeanFactory;
 import codesquad.web.AnnotationHandlerMapping;
+import codesquad.web.RequestDispatcher;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,9 +25,12 @@ public final class Server {
         AnnotationHandlerMapping annotationHandlerMapping = new AnnotationHandlerMapping();
         annotationHandlerMapping.init(beanFactory);
 
+        // 디스패처를 초기화합니다.
+        RequestDispatcher requestDispatcher = new RequestDispatcher(annotationHandlerMapping);
+
         while (true) {
             Socket clientSocket = serverSocket.accept();
-            EXECUTOR_SERVICE.execute(new ClientRequest(clientSocket, annotationHandlerMapping));
+            EXECUTOR_SERVICE.execute(new ClientRequest(clientSocket, requestDispatcher));
         }
     }
 

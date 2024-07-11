@@ -55,10 +55,11 @@ public class BeanFactory {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 빈입니다."));
     }
 
-    public Object getBean(Class<?> clazz) {
+    public <T> T getBean(Class<T> clazz) {
         return context.values().stream()
                 .filter(obj -> obj.getClass().equals(clazz))
                 .findFirst()
+                .map(clazz::cast)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 빈입니다."));
     }
 

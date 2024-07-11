@@ -3,6 +3,7 @@ package codesquad.config;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,7 +60,7 @@ public class BeanFactory {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 빈입니다."));
     }
 
-//    public List<Object> getBeans() {
-//        return context.values().stream().toList();
-//    }
+    public List<Object> getBeans() {
+        return context.values().stream().toList();
+    }
 }

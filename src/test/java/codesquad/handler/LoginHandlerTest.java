@@ -2,7 +2,8 @@ package codesquad.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.database.DataBase;
+import codesquad.database.UserDatabase;
+import codesquad.database.UserSessionStorage;
 import codesquad.fixture.HttpFixture;
 import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
@@ -22,29 +23,34 @@ class LoginHandlerTest {
     class HandleTest {
 
         private LoginHandler loginHandler;
-        private String rawHttpMessage;
+        private UserDatabase userDatabase;
+        private UserSessionStorage userSessionStorage;
+        private HttpRequest httpRequest;
+        private User user;
 
         @BeforeEach
         void setUp() {
-            loginHandler = new LoginHandler();
-            rawHttpMessage = HttpFixture.builder()
+            userDatabase = new UserDatabase();
+            userSessionStorage = new UserSessionStorage();
+            loginHandler = new LoginHandler(userDatabase, userSessionStorage);
+            String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.POST)
                     .path("/login")
                     .body("userId=userId&password=password")
                     .build();
-            User user = User.create("userId", "password", "name", "email@email.com");
-            DataBase.addUser(user);
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            httpRequest = HttpRequest.parse(br);
+            user = User.create("userId", "password", "name", "email@email.com");
+            userDatabase.addUser(user);
         }
 
         @Test
         @DisplayName("로그인에 성공하면 메인 페이지로 리다이렉트한다.")
         void redirectToMain() {
             //given
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
-            ModelAndView mav = loginHandler.handle(httpRequest);
+            ModelAndView mav = loginHandler.login(httpRequest);
 
             //then
             assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
@@ -57,11 +63,9 @@ class LoginHandlerTest {
         @DisplayName("로그인에 성공하면 쿠키를 반환한다.")
         void returnLoginCookie() {
             //given
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
-            ModelAndView mav = loginHandler.handle(httpRequest);
+            ModelAndView mav = loginHandler.login(httpRequest);
 
             //then
             assertThat(mav.getHeaders()).satisfies(headers -> {
@@ -85,7 +89,7 @@ class LoginHandlerTest {
             HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
-            ModelAndView mav = loginHandler.handle(httpRequest);
+            ModelAndView mav = loginHandler.login(httpRequest);
 
             //then
             assertThat(mav.getHeaders()).satisfies(headers -> {
@@ -107,7 +111,7 @@ class LoginHandlerTest {
             HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
-            ModelAndView mav = loginHandler.handle(httpRequest);
+            ModelAndView mav = loginHandler.login(httpRequest);
 
             //then
             assertThat(mav.getHeaders()).satisfies(headers -> {

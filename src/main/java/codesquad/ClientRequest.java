@@ -1,8 +1,7 @@
 package codesquad;
 
-import codesquad.config.BeanFactory;
-import codesquad.handler.Handler;
-import codesquad.handler.HandlerMapper;
+import codesquad.handler.AnnotationHandlerMapping;
+import codesquad.handler.HandlerMethod;
 import codesquad.handler.ModelAndView;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpResponse;
@@ -25,9 +24,11 @@ public class ClientRequest implements Runnable {
     public static final String HTTP_1_1 = "HTTP/1.1";
 
     private final Socket clientSocket;
+    private final AnnotationHandlerMapping annotationHandlerMapping;
 
-    public ClientRequest(Socket clientSocket) {
+    public ClientRequest(Socket clientSocket, AnnotationHandlerMapping annotationHandlerMapping) {
         this.clientSocket = clientSocket;
+        this.annotationHandlerMapping = annotationHandlerMapping;
     }
 
     @Override
@@ -51,13 +52,9 @@ public class ClientRequest implements Runnable {
             HttpRequest httpRequest = HttpRequest.parse(br);
             log.debug("Http request message={}", httpRequest);
 
-            // 컨텍스트를 초기화합니다.
-            BeanFactory beanFactory = new BeanFactory();
-            beanFactory.start();
-
             // 요청을 처리할 핸들러를 조회합니다.
-            Handler handler = HandlerMapper.mapping(httpRequest);
-            ModelAndView modelAndView = handler.handle(httpRequest);
+            HandlerMethod handlerMethod = annotationHandlerMapping.getHandler(httpRequest);
+            ModelAndView modelAndView = handlerMethod.invoke(httpRequest);
 
             // 뷰를 렌더링합니다.
             String renderedView = TemplateEngine.render(new String(modelAndView.getView()), modelAndView);

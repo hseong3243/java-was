@@ -15,7 +15,6 @@ public final class HandlerMapper {
     static {
         GET_HANDLERS.put("/user/list", new ListUserHandler());
         POST_HANDLERS.put("/user/create", new CreateUserHandler());
-        POST_HANDLERS.put("/login", new LoginHandler());
     }
 
     public static Handler mapping(HttpRequest httpRequest) {

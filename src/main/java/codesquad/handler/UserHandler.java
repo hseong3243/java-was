@@ -1,13 +1,14 @@
 package codesquad.handler;
 
-import codesquad.database.DataBase;
 import codesquad.database.UserDatabase;
 import codesquad.database.UserSessionStorage;
+import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpStatusCode;
 import codesquad.model.User;
 import codesquad.util.ResourceUtils;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public class UserHandler {
     private record Data(String userId, String password, String name, String email) {
     }
 
-    @PostMapping("/user/create")
+    @RequestMapping(method = HttpMethod.POST, path = "/user/create")
     public ModelAndView createUser(HttpRequest httpRequest) {
         Data data = queriesToData(httpRequest);
         User user = User.create(data.userId, data.password, data.name, data.password);
@@ -35,7 +36,7 @@ public class UserHandler {
         ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/");
         modelAndView.add("userId", user.getUserId());
-        DataBase.addUser(user);
+        userDatabase.addUser(user);
         return modelAndView;
     }
 
@@ -48,7 +49,7 @@ public class UserHandler {
         return new Data(userId, password, name, email);
     }
 
-    @GetMapping("/user/list")
+    @RequestMapping(method = HttpMethod.GET, path = "/user/list")
     public ModelAndView listUser(HttpRequest httpRequest) {
         String sessionId = httpRequest.cookies().get("SID");
         if (sessionId == null) {
@@ -56,8 +57,11 @@ public class UserHandler {
             mav.addHeader("Location", "/login");
             return mav;
         }
+
+        userSessionStorage.findLoginUser(sessionId)
+                .orElseThrow(() -> new NoSuchElementException("세션 정보가 유효하지 않습니다."));
         StringBuilder sb = new StringBuilder();
-        for (User user : DataBase.findAll()) {
+        for (User user : userDatabase.findAll()) {
             sb.append("[UserId=").append(user.getUserId()).append(", ")
                     .append("Name=").append(user.getName()).append(", ")
                     .append("Email=").append(user.getEmail()).append("]")

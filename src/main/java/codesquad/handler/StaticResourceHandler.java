@@ -1,8 +1,11 @@
 package codesquad.handler;
 
+import codesquad.database.DataBase;
+import codesquad.database.SessionStorage;
 import codesquad.message.HttpRequest;
-import java.io.IOException;
-import java.io.InputStream;
+import codesquad.model.User;
+import codesquad.util.ResourceUtils;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +16,10 @@ public class StaticResourceHandler implements Handler {
     @Override
     public ModelAndView handle(HttpRequest httpRequest) {
         String viewPath = addIndexPath(httpRequest.requestUrl());
-        byte[] view = getStaticFile(viewPath);
+        byte[] view = ResourceUtils.getStaticFile(viewPath);
         ModelAndView modelAndView = new ModelAndView(view);
         modelAndView.addHeader("Content-Length", String.valueOf(view.length));
+        addUserInfoToModel(httpRequest, viewPath, modelAndView);
         return modelAndView;
     }
 
@@ -29,14 +33,21 @@ public class StaticResourceHandler implements Handler {
         return requestUrl + "/index.html";
     }
 
-    private byte[] getStaticFile(String resourcePath) {
-        try {
-            InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("static" + resourcePath);
-            return resourceAsStream.readAllBytes();
-        } catch (NullPointerException e) {
-            throw new NoSuchElementException("유효하지 않은 경로입니다. path=" + resourcePath);
-        } catch (IOException e) {
-            throw new RuntimeException("입출력 예외가 발생했습니다.", e);
+    private void addUserInfoToModel(HttpRequest httpRequest, String viewPath, ModelAndView modelAndView) {
+        Map<String, String> cookies = httpRequest.cookies();
+        if (viewPath.contains("html") && cookies.containsKey("SID")) {
+            String sessionId = cookies.get("SID");
+            if (!SessionStorage.isValid(sessionId)) {
+                modelAndView.invalidateCookie();
+                return;
+            }
+            String userId = SessionStorage.findLoginUser(sessionId)
+                    .orElseThrow(() -> new NoSuchElementException("세션이 유효하지 않습니다."));
+            User user = DataBase.findUserByUserId(userId)
+                    .orElseThrow(() -> new NoSuchElementException("유저 정보가 유효하지 않습니다."));
+            modelAndView.add("userId", user.getUserId());
+            modelAndView.add("name", user.getName());
+            modelAndView.add("email", user.getEmail());
         }
     }
 }

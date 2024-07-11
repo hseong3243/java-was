@@ -1,5 +1,7 @@
 package codesquad.message;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +30,29 @@ public final class HttpResponse {
         this(version, statusCode, body.getBytes());
     }
 
+    public void addHeader(String key, String contentType) {
+        headers.put(key, contentType);
+    }
+
+    public void addHeaders(Map<String, String> headers) {
+        this.headers.putAll(headers);
+    }
+
+    public void write(OutputStream clientOutput) {
+        try {
+            writeInner(clientOutput);
+        } catch (IOException e) {
+            throw new RuntimeIOException(e);
+        }
+    }
+
+    private void writeInner(OutputStream clientOutput) throws IOException {
+        clientOutput.write(getHttpMessageStartLine());
+        clientOutput.write(getHttpMessageHeaders());
+        clientOutput.write("\n".getBytes());
+        clientOutput.write(getHttpMessageBody());
+    }
+
     public byte[] getHttpMessageStartLine() {
         String sb = version + " " + statusCode.getStatusCode() + " " + statusCode.getStatusText() + CRLF;
         return sb.getBytes();
@@ -43,13 +68,5 @@ public final class HttpResponse {
 
     public byte[] getHttpMessageBody() {
         return body;
-    }
-
-    public void addHeader(String key, String contentType) {
-        headers.put(key, contentType);
-    }
-
-    public void addHeaders(Map<String, String> headers) {
-        this.headers.putAll(headers);
     }
 }

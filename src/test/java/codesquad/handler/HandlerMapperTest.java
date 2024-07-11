@@ -3,7 +3,11 @@ package codesquad.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
+import codesquad.fixture.HttpFixture;
+import codesquad.message.HttpMethod;
 import codesquad.message.HttpRequest;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -23,10 +27,13 @@ class HandlerMapperTest {
         @DisplayName("예외(NoSuchElement): POST 요청에 매핑되는 핸들러가 없으면 ")
         void noSuchElement_WhenNotMatchPostRequest() {
             //given
-            String rawHttpMessage = """
-                    POST /user HTTP/1.1
-                    Accept: application/json""";
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            String rawHttpMessage = HttpFixture.builder()
+                    .method(HttpMethod.POST)
+                    .path("/user")
+                    .header("Accept", "application/json")
+                    .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             Exception exception = catchException(() -> HandlerMapper.mapping(httpRequest));
@@ -39,10 +46,13 @@ class HandlerMapperTest {
         @DisplayName("GET 요청에 매핑되는 핸들러가 없으면 정적 리소스 핸들러를 반환한다.")
         void test() {
             //given
-            String rawHttpMessage = """
-                    GET /user HTTP/1.1
-                    Accept: application/json""";
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            String rawHttpMessage = HttpFixture.builder()
+                    .method(HttpMethod.GET)
+                    .path("/user")
+                    .header("Accept", "application/json")
+                    .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             Handler handler = HandlerMapper.mapping(httpRequest);
@@ -56,10 +66,13 @@ class HandlerMapperTest {
         @DisplayName("URL 경로에 매핑된 핸들러를 조회한다.")
         void findHandler(String url, Handler expected) {
             //given
-            String rawHttpMessage = """
-                    POST /user/create HTTP/1.1
-                    Accept: application/json""";
-            HttpRequest httpRequest = HttpRequest.parse(rawHttpMessage);
+            String rawHttpMessage = HttpFixture.builder()
+                    .method(HttpMethod.POST)
+                    .path("/user/create")
+                    .header("Accept", "application/json")
+                    .build();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
             Handler handler = HandlerMapper.mapping(httpRequest);

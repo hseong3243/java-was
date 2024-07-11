@@ -1,17 +1,20 @@
 package codesquad.message;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public record HttpHeaders(Map<String, String> headers) {
 
     private static final String LINE_SEPARATOR = "\n";
 
-    public static HttpHeaders parse(String rawHeaders) {
+    public static HttpHeaders parse(BufferedReader br) throws IOException {
         Map<String, String> headers = new HashMap<>();
-        String[] splitHeaders = rawHeaders.split(LINE_SEPARATOR);
-        for (String header : splitHeaders) {
+        String header;
+        while (!(header = br.readLine()).isEmpty()) {
             String[] keyValue = header.split(": ");
             validateHeader(keyValue);
             headers.put(keyValue[0], keyValue[1]);
@@ -36,8 +39,8 @@ public record HttpHeaders(Map<String, String> headers) {
         return true;
     }
 
-    public String get(String key) {
-        return headers.get(key);
+    public Optional<String> get(String key) {
+        return Optional.ofNullable(headers.get(key));
     }
 
     public boolean isFormData() {

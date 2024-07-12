@@ -2,7 +2,6 @@ package codesquad;
 
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpResponse;
-import codesquad.web.RequestDispatcher;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,11 +16,11 @@ public class ClientRequest implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(ClientRequest.class);
 
     private final Socket clientSocket;
-    private final RequestDispatcher requestDispatcher;
+    private final ServerHandler serverHandler;
 
-    public ClientRequest(Socket clientSocket, RequestDispatcher requestDispatcher) {
+    public ClientRequest(Socket clientSocket, ServerHandler serverHandler) {
         this.clientSocket = clientSocket;
-        this.requestDispatcher = requestDispatcher;
+        this.serverHandler = serverHandler;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class ClientRequest implements Runnable {
         HttpRequest httpRequest = HttpRequest.parse(br);
         log.debug("HTTP 요청 메시지 해석={}", httpRequest);
 
-        HttpResponse httpResponse = requestDispatcher.dispatch(httpRequest);
+        HttpResponse httpResponse = serverHandler.handle(httpRequest);
         httpResponse.write(clientOutput);
         clientOutput.flush();
         log.debug("HTTP 응답 메시지 출력={}", httpRequest);

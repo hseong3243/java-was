@@ -31,7 +31,7 @@ class RequestDispatcherTest extends ApplicationTest {
             HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
-            HttpResponse httpResponse = requestDispatcher.dispatch(httpRequest);
+            HttpResponse httpResponse = requestDispatcher.handle(httpRequest);
 
             //then
             String httpStartLine = new String(httpResponse.getHttpMessageStartLine());

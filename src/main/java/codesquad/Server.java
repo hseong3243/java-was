@@ -1,8 +1,5 @@
 package codesquad;
 
-import codesquad.bean.BeanFactory;
-import codesquad.web.AnnotationHandlerMapping;
-import codesquad.web.RequestDispatcher;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,30 +7,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public final class Server {
+public class Server {
 
-    private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(10, 200, 60, TimeUnit.SECONDS,
+    private static final Logger log = LoggerFactory.getLogger(Server.class);
+    private final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(10, 200, 60, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(50));
 
-    public static void run(ServerSocket serverSocket) throws IOException {
-        // 컨텍스트를 초기화합니다.
-        BeanFactory beanFactory = new BeanFactory();
-        beanFactory.start();
-
-        // 핸들러 매퍼를 초기화합니다.
-        AnnotationHandlerMapping annotationHandlerMapping = new AnnotationHandlerMapping();
-        annotationHandlerMapping.init(beanFactory);
-
-        // 디스패처를 초기화합니다.
-        RequestDispatcher requestDispatcher = new RequestDispatcher(annotationHandlerMapping);
-
-        while (true) {
-            Socket clientSocket = serverSocket.accept();
-            EXECUTOR_SERVICE.execute(new ClientRequest(clientSocket, requestDispatcher));
-        }
+    public Server() {
     }
 
-    private Server() {
+    public void start(ServerHandler serverHandler) {
+        log.debug("Listening for connection on port 8080 ....");
+        try (ServerSocket serverSocket = new ServerSocket(8080)) {
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                EXECUTOR_SERVICE.execute(new ClientRequest(clientSocket, serverHandler));
+            }
+        } catch (IOException e) {
+            log.error("입출력 예외가 발생하였습니다.", e);
+        }
     }
 }

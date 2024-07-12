@@ -1,6 +1,7 @@
 package codesquad.web;
 
 import codesquad.ContentTypes;
+import codesquad.ServerHandler;
 import codesquad.message.HttpRequest;
 import codesquad.message.HttpResponse;
 import codesquad.message.HttpStatusCode;
@@ -11,7 +12,7 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RequestDispatcher {
+public class RequestDispatcher implements ServerHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RequestDispatcher.class);
     public static final String HTTP_1_1 = "HTTP/1.1";
@@ -22,7 +23,7 @@ public class RequestDispatcher {
         this.handlerMapping = handlerMapping;
     }
 
-    public HttpResponse dispatch(HttpRequest httpRequest) {
+    public HttpResponse handle(HttpRequest httpRequest) {
         try {
             return dispatchInternal(httpRequest);
         } catch (Exception e) {

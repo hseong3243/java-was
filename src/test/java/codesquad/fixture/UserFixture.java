@@ -1,6 +1,6 @@
 package codesquad.fixture;
 
-import codesquad.model.User;
+import codesquad.application.model.User;
 
 public class UserFixture {
 

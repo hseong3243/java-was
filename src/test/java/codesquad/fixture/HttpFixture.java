@@ -1,6 +1,6 @@
 package codesquad.fixture;
 
-import codesquad.message.HttpMethod;
+import codesquad.server.message.HttpMethod;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +64,15 @@ public class HttpFixture {
             headers.forEach((key, value) -> {
                 sb.append(key).append(": ").append(value).append("\n");
             });
+            if (cookies.isEmpty()) {
+                return sb.toString();
+            }
+
+            sb.append("Cookie: ");
+            cookies.forEach((key, value) -> {
+                sb.append(key).append("=").append(value).append("; ");
+            });
+            sb.append("\n");
             return sb.toString();
         }
 

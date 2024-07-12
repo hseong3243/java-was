@@ -1,6 +1,6 @@
 package codesquad.fixture;
 
-import codesquad.message.HttpMethod;
+import codesquad.server.message.HttpMethod;
 import java.util.HashMap;
 import java.util.Map;
 

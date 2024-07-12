@@ -1,8 +1,8 @@
 package codesquad.base;
 
-import codesquad.bean.BeanFactory;
-import codesquad.web.AnnotationHandlerMapping;
-import codesquad.web.RequestDispatcher;
+import codesquad.application.bean.BeanFactory;
+import codesquad.application.web.AnnotationHandlerMapping;
+import codesquad.application.web.RequestDispatcher;
 import org.junit.jupiter.api.BeforeEach;
 
 public abstract class ApplicationTest {

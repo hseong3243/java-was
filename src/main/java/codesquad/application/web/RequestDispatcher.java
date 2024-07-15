@@ -1,13 +1,13 @@
 package codesquad.application.web;
 
-import codesquad.server.message.ContentTypes;
+import codesquad.application.util.ResourceUtils;
+import codesquad.application.view.TemplateEngine;
 import codesquad.server.ServerHandler;
+import codesquad.server.message.ContentTypes;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpResponse;
 import codesquad.server.message.HttpStatusCode;
 import codesquad.server.message.RuntimeIOException;
-import codesquad.application.view.TemplateEngine;
-import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +26,12 @@ public class RequestDispatcher implements ServerHandler {
     public HttpResponse handle(HttpRequest httpRequest) {
         try {
             return dispatchInternal(httpRequest);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return errorHandle(e);
         }
     }
 
-    private HttpResponse dispatchInternal(HttpRequest httpRequest)
-            throws InvocationTargetException, IllegalAccessException {
+    private HttpResponse dispatchInternal(HttpRequest httpRequest) throws Throwable {
         log.debug("요청 경로에 따른 핸들러 메서드 조회");
         HandlerMethod handlerMethod = handlerMapping.getHandler(httpRequest);
 
@@ -62,19 +61,23 @@ public class RequestDispatcher implements ServerHandler {
         return ContentTypes.getMimeType(fileNameExtension);
     }
 
-    private HttpResponse errorHandle(Exception e) {
+    private HttpResponse errorHandle(Throwable e) {
         log.warn("예외가 발생했습니다.", e);
         HttpResponse httpResponse;
         if (e instanceof IllegalArgumentException) {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.BAD_REQUEST, "올바르지 않은 요청입니다.");
+            httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
         } else if (e instanceof NoSuchElementException) {
-            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.NOT_FOUND, "존재하지 않는 리소스입니다.");
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.NOT_FOUND,
+                    ResourceUtils.getStaticFile("/error/notfound.html"));
+            httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
         } else if (e instanceof RuntimeIOException) {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "입출력 예외가 발생했습니다.");
+            httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
         } else {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다.");
+            httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
         }
-        httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
         return httpResponse;
     }
 }

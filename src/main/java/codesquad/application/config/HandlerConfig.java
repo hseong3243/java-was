@@ -1,6 +1,7 @@
 package codesquad.application.config;
 
 import codesquad.application.bean.Bean;
+import codesquad.application.database.ArticleDatabase;
 import codesquad.application.database.UserDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.handler.ArticleHandler;
@@ -32,7 +33,8 @@ public class HandlerConfig {
     }
 
     @Bean
-    public ArticleHandler articleHandler(SessionStorage sessionStorage) {
-        return new ArticleHandler(sessionStorage);
+    public ArticleHandler articleHandler(SessionStorage sessionStorage, ArticleDatabase articleDatabase,
+                                         UserDatabase userDatabase) {
+        return new ArticleHandler(articleDatabase, sessionStorage, userDatabase);
     }
 }

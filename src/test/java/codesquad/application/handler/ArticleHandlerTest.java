@@ -42,7 +42,7 @@ class ArticleHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/article")
                     .cookie("SID", sessionId)
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             HttpRequest httpRequest = HttpRequest.parse(br);
 
@@ -61,7 +61,7 @@ class ArticleHandlerTest {
             User user = UserFixture.user();
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/article")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             HttpRequest httpRequest = HttpRequest.parse(br);
 

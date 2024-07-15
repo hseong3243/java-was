@@ -2,7 +2,6 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.handler.UserHandler;
 import codesquad.application.database.Database;
 import codesquad.application.database.SessionStorage;
 import codesquad.fixture.HttpFixture;
@@ -43,7 +42,7 @@ class UserHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.POST).path("/user/create")
                     .body("userId=userId&password=password&name=name&email=email")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             httpRequest = HttpRequest.parse(br);
         }
@@ -96,7 +95,7 @@ class UserHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/user/list")
                     .cookie("SID", sessionId)
-                    .build();
+                    .buildToRawHttpMessage();
             loginUserHttpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
         }
 
@@ -119,7 +118,7 @@ class UserHandlerTest {
             //given
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/user/list")
-                    .build();
+                    .buildToRawHttpMessage();
             HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
 
             //when

@@ -1,6 +1,9 @@
 package codesquad.fixture;
 
 import codesquad.server.message.HttpMethod;
+import codesquad.server.message.HttpRequest;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +51,7 @@ public class HttpFixture {
             return this;
         }
 
-        public String build() {
+        public String buildToRawHttpMessage() {
             return  """
                     {method} {path} HTTP/1.1
                     {header}
@@ -76,5 +79,10 @@ public class HttpFixture {
             return sb.toString();
         }
 
+        public HttpRequest buildToHttpRequest() {
+            String rawHttpMessage = buildToRawHttpMessage();
+            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            return HttpRequest.parse(br);
+        }
     }
 }

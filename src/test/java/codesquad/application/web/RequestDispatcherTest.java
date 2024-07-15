@@ -26,7 +26,7 @@ class RequestDispatcherTest extends ApplicationTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.POST).path("/user/create")
                     .body("userId=userId&password=password&name=name&email=email@email.com")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             HttpRequest httpRequest = HttpRequest.parse(br);
 

@@ -2,7 +2,6 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.handler.MainHandler;
 import codesquad.application.database.Database;
 import codesquad.application.database.SessionStorage;
 import codesquad.fixture.HttpFixture;
@@ -38,7 +37,7 @@ class MainHandlerTest {
         String rawHttpMessage = HttpFixture.builder()
                 .method(HttpMethod.GET).path("/")
                 .cookie("SID", sessionId)
-                .build();
+                .buildToRawHttpMessage();
         httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
     }
 
@@ -78,7 +77,7 @@ class MainHandlerTest {
             //given
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/")
-                    .build();
+                    .buildToRawHttpMessage();
             HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
 
             //when

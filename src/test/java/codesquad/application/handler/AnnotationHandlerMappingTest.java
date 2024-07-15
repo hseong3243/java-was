@@ -38,7 +38,7 @@ class AnnotationHandlerMappingTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET)
                     .path("/asdf")
-                    .build();
+                    .buildToRawHttpMessage();
             HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
 
             //when
@@ -55,7 +55,7 @@ class AnnotationHandlerMappingTest {
             //given
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/article")
-                    .build();
+                    .buildToRawHttpMessage();
             HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
 
             //when

@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.fixture.HttpFixture;
-import codesquad.server.message.HttpMethod;
-import codesquad.server.message.HttpRequest;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Map;
@@ -29,7 +27,7 @@ class HttpRequestTest {
                     .header("Host", "localhost:8080")
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
@@ -54,7 +52,7 @@ class HttpRequestTest {
                     .header("Host", "localhost:8080")
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
@@ -84,7 +82,7 @@ class HttpRequestTest {
                     .header("Host", "localhost:8080")
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
@@ -109,7 +107,7 @@ class HttpRequestTest {
                     .header("Host", "localhost:8080")
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when
@@ -128,7 +126,7 @@ class HttpRequestTest {
                     .path("/user/create")
                     .header("Host", "localhost:8080")
                     .body("userId=userId&nickname=nickname")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
 
             //when

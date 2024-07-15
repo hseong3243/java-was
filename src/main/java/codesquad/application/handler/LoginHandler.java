@@ -1,6 +1,6 @@
 package codesquad.application.handler;
 
-import codesquad.application.database.Database;
+import codesquad.application.database.UserDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
@@ -13,11 +13,11 @@ import java.util.NoSuchElementException;
 
 public class LoginHandler {
 
-    private final Database database;
+    private final UserDatabase userDatabase;
     private final SessionStorage sessionStorage;
 
-    public LoginHandler(Database database, SessionStorage sessionStorage) {
-        this.database = database;
+    public LoginHandler(UserDatabase userDatabase, SessionStorage sessionStorage) {
+        this.userDatabase = userDatabase;
         this.sessionStorage = sessionStorage;
     }
 
@@ -26,7 +26,7 @@ public class LoginHandler {
         Data data = Data.from(httpRequest);
         User user;
         try {
-            user = database.findUserByUserId(data.userId)
+            user = userDatabase.findUserByUserId(data.userId)
                     .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
             user.validatePassword(data.password);
         } catch (NoSuchElementException e) {

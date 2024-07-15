@@ -33,11 +33,28 @@ class AnnotationHandlerMappingTest {
 
         @Test
         @DisplayName("정적 리소스 핸들러가 등록된다.")
-        void test() {
+        void registerStaticHandler() {
             //given
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET)
                     .path("/asdf")
+                    .build();
+            HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
+
+            //when
+            handlerMapping.init(beanFactory);
+
+            //then
+            HandlerMethod handlerMethod = handlerMapping.getHandler(httpRequest);
+            assertThat(handlerMethod).isNotNull();
+        }
+
+        @Test
+        @DisplayName("게시글 핸들러가 등록된다.")
+        void registerArticleHandler() {
+            //given
+            String rawHttpMessage = HttpFixture.builder()
+                    .method(HttpMethod.GET).path("/article")
                     .build();
             HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
 

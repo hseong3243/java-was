@@ -3,6 +3,7 @@ package codesquad.application.config;
 import codesquad.application.bean.Bean;
 import codesquad.application.database.Database;
 import codesquad.application.database.SessionStorage;
+import codesquad.application.handler.ArticleHandler;
 import codesquad.application.handler.MainHandler;
 import codesquad.application.web.StaticResourceHandler;
 import codesquad.application.handler.UserHandler;
@@ -28,5 +29,10 @@ public class HandlerConfig {
     @Bean
     public StaticResourceHandler staticResourceHandler() {
         return new StaticResourceHandler();
+    }
+
+    @Bean
+    public ArticleHandler articleHandler(SessionStorage sessionStorage) {
+        return new ArticleHandler(sessionStorage);
     }
 }

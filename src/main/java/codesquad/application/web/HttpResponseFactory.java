@@ -11,8 +11,8 @@ public final class HttpResponseFactory {
     private static final String HTTP1_1 = "HTTP/1.1";
 
     public static HttpResponse badRequest() {
-        HttpResponse httpResponse = new HttpResponse(HTTP1_1, HttpStatusCode.BAD_REQUEST, "올바르지 않은 요청입니다.");
-        httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
+        HttpResponse httpResponse = new HttpResponse(HTTP1_1, HttpStatusCode.BAD_REQUEST, ResourceUtils.getStaticFile("/error/badRequest.html"));
+        httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
         return httpResponse;
     }
 
@@ -39,7 +39,7 @@ public final class HttpResponseFactory {
         httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
         return httpResponse;
     }
-    
+
     private HttpResponseFactory() {
     }
 }

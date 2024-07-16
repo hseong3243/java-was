@@ -17,6 +17,7 @@ import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -229,6 +230,26 @@ class ArticleHandlerTest {
 
             //then
             assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("getArticles 호출 시")
+    class GetArticlesTest {
+
+        @Test
+        @DisplayName("게시글 목록을 모델에 담는다.")
+        void test() {
+            //given
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.GET).path("/articles")
+                    .buildToHttpRequest();
+
+            //when
+            ModelAndView mav = articleHandler.getArticles(httpRequest);
+
+            //then
+            assertThat(mav.get("articles")).isNotNull().isInstanceOf(List.class);
         }
     }
 }

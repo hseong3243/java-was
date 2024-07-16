@@ -11,6 +11,7 @@ import codesquad.application.web.RequestMapping;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ArticleHandler {
@@ -100,6 +101,14 @@ public class ArticleHandler {
         modelAndView.add("content", article.getContent());
         modelAndView.add("userId", article.getAuthor().getUserId());
         modelAndView.add("username", article.getAuthor().getName());
+        return modelAndView;
+    }
+
+    @RequestMapping(path = "/articles", method = HttpMethod.GET)
+    public ModelAndView getArticles(HttpRequest request) {
+        List<Article> articles = articleDatabase.findAll();
+        ModelAndView modelAndView = new ModelAndView(ResourceUtils.getStaticFile("/article/articleList.html"));
+        modelAndView.add("articles", articles);
         return modelAndView;
     }
 }

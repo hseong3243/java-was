@@ -1,6 +1,7 @@
 package codesquad.application.database;
 
 import codesquad.application.model.Article;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,5 +20,9 @@ public class ArticleDatabase {
 
     public Optional<Article> findById(Long articleId) {
         return Optional.ofNullable(database.get(articleId));
+    }
+
+    public List<Article> findAll() {
+        return database.values().stream().toList();
     }
 }

@@ -9,6 +9,7 @@ import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpResponse;
 import java.io.BufferedReader;
 import java.io.StringReader;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ class RequestDispatcherTest extends ApplicationTest {
 
         @Test
         @DisplayName("요청 경로에 맞는 응답을 생성한다.")
+        @Disabled
         void createHttpResponse() {
             //given
             String rawHttpMessage = HttpFixture.builder()

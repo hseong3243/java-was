@@ -17,6 +17,10 @@ public class Article {
         return new Article(articleId, title, content, Author.create(user));
     }
 
+    public static Article create(Long articleId, String title, String content, Author author) {
+        return new Article(articleId, title, content, author);
+    }
+
     public Long getArticleId() {
         return articleId;
     }

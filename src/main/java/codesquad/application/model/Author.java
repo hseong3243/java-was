@@ -13,6 +13,10 @@ public class Author {
         return new Author(user.getUserId(), user.getName());
     }
 
+    public static Author create(String userId, String name) {
+        return new Author(userId, name);
+    }
+
     public String getUserId() {
         return userId;
     }

@@ -19,6 +19,9 @@ public class Application {
     }
 
     public BeanFactory start() {
+        log.debug("h2 인메모리 데이터베이스를 실행합니다.");
+        DatabaseInit.init();
+
         log.debug("컨텍스트를 실행합니다.");
         BeanFactory beanFactory = new BeanFactory();
         beanFactory.start();

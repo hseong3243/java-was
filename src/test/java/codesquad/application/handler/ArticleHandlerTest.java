@@ -3,7 +3,7 @@ package codesquad.application.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
-import codesquad.application.database.ArticleDatabase;
+import codesquad.application.database.ArticleMemoryDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.model.Article;
@@ -29,13 +29,13 @@ class ArticleHandlerTest {
 
     private ArticleHandler articleHandler;
     private SessionStorage sessionStorage;
-    private ArticleDatabase articleDatabase;
+    private ArticleMemoryDatabase articleDatabase;
     private UserMemoryDatabase userMemoryDatabase;
 
     @BeforeEach
     void setUp() {
         sessionStorage = new SessionStorage();
-        articleDatabase = new ArticleDatabase();
+        articleDatabase = new ArticleMemoryDatabase();
         userMemoryDatabase = new UserMemoryDatabase();
         articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userMemoryDatabase);
     }

@@ -2,27 +2,14 @@ package codesquad.application.database;
 
 import codesquad.application.model.Article;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class ArticleDatabase {
-    private final Map<Long, Article> database = new ConcurrentHashMap<>();
+public interface ArticleDatabase {
+    Long save(Article article);
 
-    public Long save(Article article) {
-        database.put(article.getArticleId(), article);
-        return article.getArticleId();
-    }
+    Long getNextId();
 
-    public Long getNextId() {
-        return (long) (database.size() + 1);
-    }
+    Optional<Article> findById(Long articleId);
 
-    public Optional<Article> findById(Long articleId) {
-        return Optional.ofNullable(database.get(articleId));
-    }
-
-    public List<Article> findAll() {
-        return database.values().stream().toList();
-    }
+    List<Article> findAll();
 }

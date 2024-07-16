@@ -1,12 +1,10 @@
 package codesquad.application.web;
 
-import codesquad.application.util.ResourceUtils;
 import codesquad.application.view.TemplateEngine;
 import codesquad.server.ServerHandler;
 import codesquad.server.message.ContentTypes;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpResponse;
-import codesquad.server.message.HttpStatusCode;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,24 +62,13 @@ public class RequestDispatcher implements ServerHandler {
         log.warn("예외가 발생했습니다.", e);
         HttpResponse httpResponse;
         if (e instanceof IllegalArgumentException) {
-            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.BAD_REQUEST, "올바르지 않은 요청입니다.");
-            httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
+            httpResponse = HttpResponseFactory.badRequest();
         } else if (e instanceof NoSuchElementException) {
-            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.NOT_FOUND,
-                    ResourceUtils.getStaticFile("/error/notfound.html"));
-            httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
+            httpResponse = HttpResponseFactory.notFound();
         } else if(e instanceof MethodNotAllowedException methodNotAllowedException) {
-            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.METHOD_NOT_ALLOWED,
-                    ResourceUtils.getStaticFile("/error/methodNotAllowed.html"));
-            httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
-            StringBuilder sb = new StringBuilder();
-            methodNotAllowedException.getAllowedMethods()
-                            .forEach(method -> sb.append(method.name()).append("; "));
-            httpResponse.addHeader("Allow", sb.toString());
+            httpResponse = HttpResponseFactory.methodNotAllowed(methodNotAllowedException.getAllowedMethods());
         } else {
-            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR,
-                    ResourceUtils.getStaticFile("/error/internal.html"));
-            httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
+            httpResponse = HttpResponseFactory.internalServerError();
         }
         return httpResponse;
     }

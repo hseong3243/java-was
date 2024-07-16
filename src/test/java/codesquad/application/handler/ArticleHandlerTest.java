@@ -17,6 +17,7 @@ import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -168,6 +169,63 @@ class ArticleHandlerTest {
 
             //when
             Exception exception = catchException(() -> articleHandler.postArticle(httpRequest));
+
+            //then
+            assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("getArticle 호출 시")
+    class GetArticleTest {
+
+        @Test
+        @DisplayName("articleId에 해당하는 게시글을 반환한다.")
+        void findArticle() {
+            //given
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.GET).path("/article?articleId=1")
+                    .buildToHttpRequest();
+            User user = UserFixture.user();
+            Article article = Article.create(articleDatabase.getNextId(), "제목", "내용", user);
+            articleDatabase.save(article);
+
+            //when
+            ModelAndView mav = articleHandler.getArticle(httpRequest);
+
+            //then
+            assertThat(mav.getModelValue("articleId")).isNotNull().asLong().isEqualTo(article.getArticleId());
+            assertThat(mav.getModelValue("title")).isNotNull().isEqualTo(article.getTitle());
+            assertThat(mav.getModelValue("content")).isNotNull().isEqualTo(article.getContent());
+            assertThat(mav.getModelValue("userId")).isNotNull().isEqualTo(user.getUserId());
+            assertThat(mav.getModelValue("username")).isNotNull().isEqualTo(user.getName());
+        }
+
+        @Test
+        @DisplayName("예외(noSuchElement): articleId에 해당하는 게시글이 없으면")
+        void noSuchElement_WhenNoArticle() {
+            //given
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.GET).path("/article?articleId=2")
+                    .buildToHttpRequest();
+
+            //when
+            Exception exception = catchException(() -> articleHandler.getArticle(httpRequest));
+
+            //then
+            assertThat(exception).isInstanceOf(NoSuchElementException.class);
+        }
+
+        @Test
+        @DisplayName("예외(illegalArgument): articleId가 쿼리 파라미터에 없으면")
+        void illegalArgument_WhenArticleIdIsEmpty() {
+            //given
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.GET).path("/article")
+                    .buildToHttpRequest();
+
+            //when
+            Exception exception = catchException(() -> articleHandler.getArticle(httpRequest));
 
             //then
             assertThat(exception).isInstanceOf(IllegalArgumentException.class);

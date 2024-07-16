@@ -32,6 +32,10 @@ public class ModelAndView {
         model.put(key, value);
     }
 
+    public void add(String key, Long value) {
+        model.put(key, String.valueOf(value));
+    }
+
     public String getModelValue(String key) {
         return model.get(key);
     }

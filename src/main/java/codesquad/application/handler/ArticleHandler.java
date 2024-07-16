@@ -63,7 +63,7 @@ public class ArticleHandler {
         articleDatabase.save(article);
 
         ModelAndView modelAndView = new ModelAndView(HttpStatusCode.MOVED_PERMANENTLY);
-        modelAndView.addHeader("Location", "/");
+        modelAndView.addHeader("Location", "/article?articleId=" + article.getArticleId());
         modelAndView.add("articleId", String.valueOf(article.getArticleId()));
         return modelAndView;
     }
@@ -75,6 +75,31 @@ public class ArticleHandler {
     private ModelAndView redirectToLogin() {
         ModelAndView modelAndView = new ModelAndView(HttpStatusCode.MOVED_PERMANENTLY);
         modelAndView.addHeader("Location", "/login");
+        return modelAndView;
+    }
+
+    private record GetArticleData(Long articleId) {
+        private static GetArticleData from(HttpRequest httpRequest) {
+            String articleId = httpRequest.queries().get("articleId");
+            if(articleId == null || articleId.isEmpty()) {
+                throw new IllegalArgumentException("게시글 아이디는 공백일 수 없습니다.");
+            }
+            return new GetArticleData(Long.parseLong(articleId));
+        }
+    }
+
+    @RequestMapping(path = "/article", method = HttpMethod.GET)
+    public ModelAndView getArticle(HttpRequest request) {
+        GetArticleData data = GetArticleData.from(request);
+        Article article = articleDatabase.findById(data.articleId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 게시글입니다."));
+        ModelAndView modelAndView = new ModelAndView(ResourceUtils.getStaticFile("/article/index.html"),
+                HttpStatusCode.OK);
+        modelAndView.add("articleId", article.getArticleId());
+        modelAndView.add("title", article.getTitle());
+        modelAndView.add("content", article.getContent());
+        modelAndView.add("userId", article.getAuthor().getUserId());
+        modelAndView.add("username", article.getAuthor().getName());
         return modelAndView;
     }
 }

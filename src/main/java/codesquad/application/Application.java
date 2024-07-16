@@ -1,6 +1,7 @@
 package codesquad.application;
 
 import codesquad.application.bean.BeanFactory;
+import codesquad.application.database.SessionStorage;
 import codesquad.server.Server;
 import codesquad.application.web.AnnotationHandlerMapping;
 import codesquad.application.web.RequestDispatcher;
@@ -31,7 +32,8 @@ public class Application {
         annotationHandlerMapping.init(beanFactory);
 
         log.debug("요청 디스패처를 초기화합니다.");
-        RequestDispatcher requestDispatcher = new RequestDispatcher(annotationHandlerMapping);
+        SessionStorage sessionStorage = beanFactory.getBean(SessionStorage.class);
+        RequestDispatcher requestDispatcher = new RequestDispatcher(annotationHandlerMapping, sessionStorage);
 
         log.debug("서버 시작");
         Server server = new Server();

@@ -1,11 +1,13 @@
 package codesquad.application.web;
 
+import codesquad.application.database.SessionStorage;
 import codesquad.application.view.TemplateEngine;
 import codesquad.server.ServerHandler;
 import codesquad.server.message.ContentTypes;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpResponse;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +17,11 @@ public class RequestDispatcher implements ServerHandler {
     public static final String HTTP_1_1 = "HTTP/1.1";
 
     private final AnnotationHandlerMapping handlerMapping;
+    private final SessionStorage sessionStorage;
 
-    public RequestDispatcher(AnnotationHandlerMapping handlerMapping) {
+    public RequestDispatcher(AnnotationHandlerMapping handlerMapping, SessionStorage sessionStorage) {
         this.handlerMapping = handlerMapping;
+        this.sessionStorage = sessionStorage;
     }
 
     public HttpResponse handle(HttpRequest httpRequest) {
@@ -29,6 +33,15 @@ public class RequestDispatcher implements ServerHandler {
     }
 
     private HttpResponse dispatchInternal(HttpRequest httpRequest) throws Throwable {
+        log.debug("사용자 세션 정보 체크");
+        Optional<String> optionalSessionId = Optional.ofNullable(httpRequest.cookies().get("SID"));
+        if(optionalSessionId.isPresent()) {
+            String sessionId = optionalSessionId.get();
+            if(sessionStorage.findLoginUser(sessionId).isEmpty()) {
+                return HttpResponseFactory.invalidateSession();
+            }
+        }
+
         log.debug("요청 경로에 따른 핸들러 메서드 조회");
         HandlerMethod handlerMethod = handlerMapping.getHandler(httpRequest);
 

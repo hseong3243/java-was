@@ -9,6 +9,7 @@ public class TemplateEngine {
     private static final List<Expression> EXPRESSIONS = new ArrayList<>();
 
     static {
+        EXPRESSIONS.add(new ForLoopExpression());
         EXPRESSIONS.add(new ConditionalExpression());
         EXPRESSIONS.add(new ValueExpression());
     }

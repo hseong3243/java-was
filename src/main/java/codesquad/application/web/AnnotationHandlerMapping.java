@@ -46,8 +46,13 @@ public class AnnotationHandlerMapping {
     }
 
     public HandlerMethod getHandler(HttpRequest httpRequest) {
-        return Optional.ofNullable(handlers.get(httpRequest.requestUrl()))
-                .map(methodHandlerMap -> methodHandlerMap.get(httpRequest.method()))
-                .orElse(staticResourceHandler);
+        Optional<Map<HttpMethod, HandlerMethod>> optionalHandlerMethods = Optional.ofNullable(
+                handlers.get(httpRequest.requestUrl()));
+        if(optionalHandlerMethods.isEmpty()) {
+            return staticResourceHandler;
+        }
+        Map<HttpMethod, HandlerMethod> requestHandlerMethods = optionalHandlerMethods.get();
+        return Optional.ofNullable(requestHandlerMethods.get(httpRequest.method()))
+                .orElseThrow(() -> new MethodNotAllowedException(requestHandlerMethods.keySet()));
     }
 }

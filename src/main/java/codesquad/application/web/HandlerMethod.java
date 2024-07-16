@@ -20,4 +20,12 @@ public class HandlerMethod {
             throw e.getTargetException();
         }
     }
+
+    public Object getBean() {
+        return bean;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
 }

@@ -2,7 +2,7 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.UserDatabase;
+import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.util.ResourceUtils;
 import codesquad.fixture.HttpFixture;
@@ -21,14 +21,14 @@ import org.junit.jupiter.api.Test;
 class LoginHandlerTest {
 
     private LoginHandler loginHandler;
-    private UserDatabase userDatabase;
+    private UserMemoryDatabase userMemoryDatabase;
     private SessionStorage sessionStorage;
 
     @BeforeEach
     void setUp() {
-        userDatabase = new UserDatabase();
+        userMemoryDatabase = new UserMemoryDatabase();
         sessionStorage = new SessionStorage();
-        loginHandler = new LoginHandler(userDatabase, sessionStorage);
+        loginHandler = new LoginHandler(userMemoryDatabase, sessionStorage);
     }
 
     @Nested
@@ -65,7 +65,7 @@ class LoginHandlerTest {
                     .body("userId=userId&password=password")
                     .buildToHttpRequest();
             user = User.create("userId", "password", "name", "email@email.com");
-            userDatabase.addUser(user);
+            userMemoryDatabase.addUser(user);
         }
 
         @Test

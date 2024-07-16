@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.database.ArticleDatabase;
 import codesquad.application.database.SessionStorage;
-import codesquad.application.database.UserDatabase;
+import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.model.Article;
 import codesquad.application.model.User;
 import codesquad.application.util.ResourceUtils;
@@ -30,14 +30,14 @@ class ArticleHandlerTest {
     private ArticleHandler articleHandler;
     private SessionStorage sessionStorage;
     private ArticleDatabase articleDatabase;
-    private UserDatabase userDatabase;
+    private UserMemoryDatabase userMemoryDatabase;
 
     @BeforeEach
     void setUp() {
         sessionStorage = new SessionStorage();
         articleDatabase = new ArticleDatabase();
-        userDatabase = new UserDatabase();
-        articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userDatabase);
+        userMemoryDatabase = new UserMemoryDatabase();
+        articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userMemoryDatabase);
     }
 
     @Nested
@@ -96,7 +96,7 @@ class ArticleHandlerTest {
             //given
             User user = UserFixture.user();
             String sessionId = sessionStorage.store(user);
-            userDatabase.addUser(user);
+            userMemoryDatabase.addUser(user);
             HttpRequest httpRequest = HttpFixture.builder()
                     .method(HttpMethod.POST).path("/article")
                     .cookie("SID", sessionId)
@@ -141,7 +141,7 @@ class ArticleHandlerTest {
             //given
             User user = UserFixture.user();
             String sessionId = sessionStorage.store(user);
-            userDatabase.addUser(user);
+            userMemoryDatabase.addUser(user);
             HttpRequest httpRequest = HttpFixture.builder()
                     .method(HttpMethod.POST).path("/article")
                     .cookie("SID", sessionId)
@@ -161,7 +161,7 @@ class ArticleHandlerTest {
             //given
             User user = UserFixture.user();
             String sessionId = sessionStorage.store(user);
-            userDatabase.addUser(user);
+            userMemoryDatabase.addUser(user);
             HttpRequest httpRequest = HttpFixture.builder()
                     .method(HttpMethod.POST).path("/article")
                     .cookie("SID", sessionId)

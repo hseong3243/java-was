@@ -2,13 +2,13 @@ package codesquad.application.config;
 
 import codesquad.application.bean.Bean;
 import codesquad.application.database.ArticleDatabase;
-import codesquad.application.database.UserDatabase;
 import codesquad.application.database.SessionStorage;
+import codesquad.application.database.UserDatabase;
 import codesquad.application.handler.ArticleHandler;
-import codesquad.application.handler.MainHandler;
-import codesquad.application.web.StaticResourceHandler;
-import codesquad.application.handler.UserHandler;
 import codesquad.application.handler.LoginHandler;
+import codesquad.application.handler.MainHandler;
+import codesquad.application.handler.UserHandler;
+import codesquad.application.web.StaticResourceHandler;
 
 public class HandlerConfig {
 

@@ -9,13 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class UserDatabaseTest {
+class UserMemoryDatabaseTest {
 
-    private UserDatabase userDatabase;
+    private UserMemoryDatabase userMemoryDatabase;
 
     @BeforeEach
     void setUp() {
-        userDatabase = new UserDatabase();
+        userMemoryDatabase = new UserMemoryDatabase();
     }
 
     @Nested
@@ -29,10 +29,10 @@ class UserDatabaseTest {
             User user = User.create("userId", "password", "name", "email@email.com");
 
             //when
-            userDatabase.addUser(user);
+            userMemoryDatabase.addUser(user);
 
             //then
-            Optional<User> optionalUser = userDatabase.findUserByUserId("userId");
+            Optional<User> optionalUser = userMemoryDatabase.findUserByUserId("userId");
             assertThat(optionalUser).isPresent().get().satisfies(findUser -> {
                 assertThat(findUser.getUserId()).isEqualTo("userId");
                 assertThat(findUser.getPassword()).isEqualTo("password");

@@ -1,14 +1,14 @@
 package codesquad.application.handler;
 
-import codesquad.application.database.UserDatabase;
 import codesquad.application.database.SessionStorage;
+import codesquad.application.database.UserDatabase;
+import codesquad.application.model.User;
 import codesquad.application.util.ResourceUtils;
+import codesquad.application.web.ModelAndView;
+import codesquad.application.web.RequestMapping;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
-import codesquad.application.model.User;
-import codesquad.application.web.ModelAndView;
-import codesquad.application.web.RequestMapping;
 import java.util.Map;
 import java.util.NoSuchElementException;
 

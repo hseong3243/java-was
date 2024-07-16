@@ -1,8 +1,8 @@
 package codesquad.application.handler;
 
 import codesquad.application.database.ArticleDatabase;
-import codesquad.application.database.UserDatabase;
 import codesquad.application.database.SessionStorage;
+import codesquad.application.database.UserDatabase;
 import codesquad.application.model.Article;
 import codesquad.application.model.User;
 import codesquad.application.util.ResourceUtils;

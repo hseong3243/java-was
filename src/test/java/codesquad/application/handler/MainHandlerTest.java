@@ -2,7 +2,7 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.UserDatabase;
+import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.fixture.HttpFixture;
 import codesquad.fixture.UserFixture;
@@ -21,18 +21,18 @@ import org.junit.jupiter.api.Test;
 class MainHandlerTest {
 
     private MainHandler mainHandler;
-    private UserDatabase userDatabase;
+    private UserMemoryDatabase userMemoryDatabase;
     private SessionStorage sessionStorage;
     private HttpRequest httpRequest;
     private User user;
 
     @BeforeEach
     void setUp() {
-        userDatabase = new UserDatabase();
+        userMemoryDatabase = new UserMemoryDatabase();
         sessionStorage = new SessionStorage();
-        mainHandler = new MainHandler(userDatabase, sessionStorage);
+        mainHandler = new MainHandler(userMemoryDatabase, sessionStorage);
         user = UserFixture.user();
-        userDatabase.addUser(user);
+        userMemoryDatabase.addUser(user);
         String sessionId = sessionStorage.store(user);
         String rawHttpMessage = HttpFixture.builder()
                 .method(HttpMethod.GET).path("/")

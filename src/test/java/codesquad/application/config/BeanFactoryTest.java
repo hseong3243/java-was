@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.bean.BeanFactory;
-import codesquad.application.database.UserDatabase;
+import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.handler.UserHandler;
 import java.util.stream.Stream;
@@ -45,7 +45,7 @@ class BeanFactoryTest {
 
         private static Stream<Arguments> databaseConfig() {
             return Stream.of(
-                    Arguments.arguments(UserDatabase.class),
+                    Arguments.arguments(UserMemoryDatabase.class),
                     Arguments.arguments(SessionStorage.class)
             );
         }

@@ -2,7 +2,7 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.UserDatabase;
+import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
@@ -20,15 +20,15 @@ import org.junit.jupiter.api.Test;
 
 class UserHandlerTest {
 
-    private UserDatabase userDatabase;
+    private UserMemoryDatabase userMemoryDatabase;
     private UserHandler userHandler;
     private SessionStorage sessionStorage;
 
     @BeforeEach
     void setUp() {
-        userDatabase = new UserDatabase();
+        userMemoryDatabase = new UserMemoryDatabase();
         sessionStorage = new SessionStorage();
-        userHandler = new UserHandler(userDatabase, sessionStorage);
+        userHandler = new UserHandler(userMemoryDatabase, sessionStorage);
     }
 
     @Nested
@@ -56,7 +56,7 @@ class UserHandlerTest {
             ModelAndView mav = userHandler.createUser(httpRequest);
 
             //then
-            Optional<User> optionalUser = userDatabase.findUserByUserId(mav.getModelValue("userId"));
+            Optional<User> optionalUser = userMemoryDatabase.findUserByUserId(mav.getModelValue("userId"));
             assertThat(optionalUser).isNotEmpty().get()
                     .satisfies(user -> {
                         assertThat(user.getUserId()).isEqualTo("userId");
@@ -90,7 +90,7 @@ class UserHandlerTest {
         @BeforeEach
         void setUp() {
             User user = User.create("userId", "password", "name", "email@email.com");
-            userDatabase.addUser(user);
+            userMemoryDatabase.addUser(user);
             String sessionId = sessionStorage.store(user);
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/user/list")

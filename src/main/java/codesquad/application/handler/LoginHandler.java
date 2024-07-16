@@ -2,6 +2,7 @@ package codesquad.application.handler;
 
 import codesquad.application.database.UserDatabase;
 import codesquad.application.database.SessionStorage;
+import codesquad.application.util.ResourceUtils;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
@@ -19,6 +20,11 @@ public class LoginHandler {
     public LoginHandler(UserDatabase userDatabase, SessionStorage sessionStorage) {
         this.userDatabase = userDatabase;
         this.sessionStorage = sessionStorage;
+    }
+
+    @RequestMapping(method = HttpMethod.GET, path = "/login")
+    public ModelAndView getLoginForm(HttpRequest httpRequest) {
+        return new ModelAndView(ResourceUtils.getStaticFile("/login/index.html"));
     }
 
     @RequestMapping(method = HttpMethod.POST, path = "/login")

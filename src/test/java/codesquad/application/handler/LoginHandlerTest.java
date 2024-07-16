@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import codesquad.application.database.UserDatabase;
 import codesquad.application.database.SessionStorage;
+import codesquad.application.util.ResourceUtils;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
@@ -19,28 +20,50 @@ import org.junit.jupiter.api.Test;
 
 class LoginHandlerTest {
 
-    @Nested
-    @DisplayName("handle 호출 시")
-    class HandleTest {
+    private LoginHandler loginHandler;
+    private UserDatabase userDatabase;
+    private SessionStorage sessionStorage;
 
-        private LoginHandler loginHandler;
-        private UserDatabase userDatabase;
-        private SessionStorage sessionStorage;
+    @BeforeEach
+    void setUp() {
+        userDatabase = new UserDatabase();
+        sessionStorage = new SessionStorage();
+        loginHandler = new LoginHandler(userDatabase, sessionStorage);
+    }
+
+    @Nested
+    @DisplayName("getLoginForm 호출 시")
+    class GetLoginFormTest {
+        @Test
+        @DisplayName("로그인 폼을 반환한다.")
+        void returnLoginForm() {
+            //given
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.GET).path("/login")
+                    .buildToHttpRequest();
+
+            //when
+            ModelAndView modelAndView = loginHandler.getLoginForm(httpRequest);
+
+            //then
+            assertThat(modelAndView.getView()).isEqualTo(ResourceUtils.getStaticFile("/login/index.html"));
+        }
+    }
+
+    @Nested
+    @DisplayName("login 호출 시")
+    class LoginTest {
+
         private HttpRequest httpRequest;
         private User user;
 
         @BeforeEach
         void setUp() {
-            userDatabase = new UserDatabase();
-            sessionStorage = new SessionStorage();
-            loginHandler = new LoginHandler(userDatabase, sessionStorage);
-            String rawHttpMessage = HttpFixture.builder()
+            httpRequest = HttpFixture.builder()
                     .method(HttpMethod.POST)
                     .path("/login")
                     .body("userId=userId&password=password")
-                    .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            httpRequest = HttpRequest.parse(br);
+                    .buildToHttpRequest();
             user = User.create("userId", "password", "name", "email@email.com");
             userDatabase.addUser(user);
         }

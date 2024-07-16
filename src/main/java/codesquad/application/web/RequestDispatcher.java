@@ -74,6 +74,14 @@ public class RequestDispatcher implements ServerHandler {
         } else if (e instanceof RuntimeIOException) {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "입출력 예외가 발생했습니다.");
             httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");
+        } else if(e instanceof MethodNotAllowedException methodNotAllowedException) {
+            httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.METHOD_NOT_ALLOWED,
+                    ResourceUtils.getStaticFile("/error/methodNotAllowed.html"));
+            httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
+            StringBuilder sb = new StringBuilder();
+            methodNotAllowedException.getAllowedMethods()
+                            .forEach(method -> sb.append(method.name()).append("; "));
+            httpResponse.addHeader("Allow", sb.toString());
         } else {
             httpResponse = new HttpResponse(HTTP_1_1, HttpStatusCode.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다.");
             httpResponse.addHeader("Content-Type", "text/plain; charset=UTF-8");

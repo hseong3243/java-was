@@ -10,4 +10,8 @@ public class MethodNotAllowedException extends RuntimeException {
     public MethodNotAllowedException(Set<HttpMethod> httpMethods) {
         this.allowedMethods = httpMethods;
     }
+
+    public Set<HttpMethod> getAllowedMethods() {
+        return allowedMethods;
+    }
 }

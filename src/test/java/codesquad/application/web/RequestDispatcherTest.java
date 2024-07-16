@@ -37,5 +37,27 @@ class RequestDispatcherTest extends ApplicationTest {
             String httpStartLine = new String(httpResponse.getHttpMessageStartLine());
             assertThat(httpStartLine).isEqualTo("HTTP/1.1 302 Found\n");
         }
+
+        @Nested
+        @DisplayName("예외가 발생하면")
+        class WhenThrowExceptionTest {
+
+            @Test
+            @DisplayName("methodNotAllowed이면 allow 헤더를 추가하고 405 예외 페이지를 반환한다.")
+            void test() {
+                //given
+                HttpRequest httpRequest = HttpFixture.builder()
+                        .method(HttpMethod.POST).path("/")
+                        .buildToHttpRequest();
+
+                //when
+                HttpResponse response = requestDispatcher.handle(httpRequest);
+
+                //then
+                assertThat(response.getHttpMessageStartLine()).asString().contains("405");
+                assertThat(response.getHttpMessageHeaders()).asString().contains("Allow: GET");
+                assertThat(response.getHttpMessageBody()).asString().contains("405 Method Not Allowed");
+            }
+        }
     }
 }

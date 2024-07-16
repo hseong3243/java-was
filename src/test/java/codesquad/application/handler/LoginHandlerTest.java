@@ -3,7 +3,7 @@ package codesquad.application.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import codesquad.application.database.UserMemoryDatabase;
-import codesquad.application.database.SessionStorage;
+import codesquad.application.database.SessionMemoryStorage;
 import codesquad.application.util.ResourceUtils;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
@@ -22,12 +22,12 @@ class LoginHandlerTest {
 
     private LoginHandler loginHandler;
     private UserMemoryDatabase userMemoryDatabase;
-    private SessionStorage sessionStorage;
+    private SessionMemoryStorage sessionStorage;
 
     @BeforeEach
     void setUp() {
         userMemoryDatabase = new UserMemoryDatabase();
-        sessionStorage = new SessionStorage();
+        sessionStorage = new SessionMemoryStorage();
         loginHandler = new LoginHandler(userMemoryDatabase, sessionStorage);
     }
 

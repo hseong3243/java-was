@@ -2,7 +2,6 @@ package codesquad.application.config;
 
 import codesquad.application.bean.Bean;
 import codesquad.application.database.ArticleDatabase;
-import codesquad.application.database.ArticleMemoryDatabase;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.database.UserDatabase;
 import codesquad.application.handler.ArticleHandler;

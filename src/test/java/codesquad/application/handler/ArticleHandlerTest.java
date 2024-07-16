@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.database.ArticleMemoryDatabase;
-import codesquad.application.database.SessionStorage;
+import codesquad.application.database.SessionMemoryStorage;
 import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.model.Article;
 import codesquad.application.model.User;
@@ -28,13 +28,13 @@ import org.junit.jupiter.api.Test;
 class ArticleHandlerTest {
 
     private ArticleHandler articleHandler;
-    private SessionStorage sessionStorage;
+    private SessionMemoryStorage sessionStorage;
     private ArticleMemoryDatabase articleDatabase;
     private UserMemoryDatabase userMemoryDatabase;
 
     @BeforeEach
     void setUp() {
-        sessionStorage = new SessionStorage();
+        sessionStorage = new SessionMemoryStorage();
         articleDatabase = new ArticleMemoryDatabase();
         userMemoryDatabase = new UserMemoryDatabase();
         articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userMemoryDatabase);

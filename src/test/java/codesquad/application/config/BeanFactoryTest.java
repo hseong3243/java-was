@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.bean.BeanFactory;
 import codesquad.application.database.UserMemoryDatabase;
-import codesquad.application.database.SessionStorage;
+import codesquad.application.database.SessionMemoryStorage;
 import codesquad.application.handler.UserHandler;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ class BeanFactoryTest {
         private static Stream<Arguments> databaseConfig() {
             return Stream.of(
                     Arguments.arguments(UserMemoryDatabase.class),
-                    Arguments.arguments(SessionStorage.class)
+                    Arguments.arguments(SessionMemoryStorage.class)
             );
         }
 

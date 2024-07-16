@@ -44,7 +44,7 @@ class RequestDispatcherTest extends ApplicationTest {
 
             @Test
             @DisplayName("methodNotAllowed이면 allow 헤더를 추가하고 405 예외 페이지를 반환한다.")
-            void test() {
+            void methodNotAllowed_ThenReturn405Page() {
                 //given
                 HttpRequest httpRequest = HttpFixture.builder()
                         .method(HttpMethod.POST).path("/")

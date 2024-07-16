@@ -25,13 +25,13 @@ public class ArticleHandler {
         this.userDatabase = userDatabase;
     }
 
-    @RequestMapping(path = "/article", method = HttpMethod.GET)
-    public ModelAndView getArticle(HttpRequest request) {
+    @RequestMapping(path = "/article/write", method = HttpMethod.GET)
+    public ModelAndView getArticleForm(HttpRequest request) {
         String sessionId = request.cookies().get("SID");
         if(isInvalidSession(sessionId)) {
             return redirectToLogin();
         }
-        return new ModelAndView(ResourceUtils.getStaticFile("/article/index.html"), HttpStatusCode.OK);
+        return new ModelAndView(ResourceUtils.getStaticFile("/article/write.html"), HttpStatusCode.OK);
     }
 
     private record PostArticleData(String title, String content) {

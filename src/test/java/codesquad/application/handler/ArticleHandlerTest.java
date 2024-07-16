@@ -39,8 +39,8 @@ class ArticleHandlerTest {
     }
 
     @Nested
-    @DisplayName("getArticle 호출 시")
-    class GetArticleTest {
+    @DisplayName("getArticleForm 호출 시")
+    class GetArticleWriteTest {
 
         @Test
         @DisplayName("로그인한 경우 글쓰기 폼 html을 반환한다.")
@@ -49,17 +49,17 @@ class ArticleHandlerTest {
             User user = UserFixture.user();
             String sessionId = sessionStorage.store(user);
             String rawHttpMessage = HttpFixture.builder()
-                    .method(HttpMethod.GET).path("/article")
+                    .method(HttpMethod.GET).path("/article/write")
                     .cookie("SID", sessionId)
                     .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
-            ModelAndView mav = articleHandler.getArticle(httpRequest);
+            ModelAndView mav = articleHandler.getArticleForm(httpRequest);
 
             //then
-            assertThat(mav.getView()).isEqualTo(ResourceUtils.getStaticFile("/article/index.html"));
+            assertThat(mav.getView()).isEqualTo(ResourceUtils.getStaticFile("/article/write.html"));
             assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.OK);
         }
 
@@ -69,13 +69,13 @@ class ArticleHandlerTest {
             //given
             User user = UserFixture.user();
             String rawHttpMessage = HttpFixture.builder()
-                    .method(HttpMethod.GET).path("/article")
+                    .method(HttpMethod.GET).path("/article/write")
                     .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             HttpRequest httpRequest = HttpRequest.parse(br);
 
             //when
-            ModelAndView mav = articleHandler.getArticle(httpRequest);
+            ModelAndView mav = articleHandler.getArticleForm(httpRequest);
 
             //then
             assertThat(mav.getView()).isEmpty();

@@ -2,8 +2,8 @@ package codesquad.fixture;
 
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,8 +81,8 @@ public class HttpFixture {
 
         public HttpRequest buildToHttpRequest() {
             String rawHttpMessage = buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            return HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            return HttpRequest.parse(bis);
         }
     }
 }

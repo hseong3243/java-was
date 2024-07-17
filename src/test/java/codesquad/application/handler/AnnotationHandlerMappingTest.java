@@ -10,8 +10,8 @@ import codesquad.base.ApplicationTest;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,8 @@ class AnnotationHandlerMappingTest extends ApplicationTest {
                     .method(HttpMethod.GET)
                     .path("/asdf")
                     .buildToRawHttpMessage();
-            HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             handlerMapping.init(beanFactory);
@@ -47,7 +48,8 @@ class AnnotationHandlerMappingTest extends ApplicationTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/article")
                     .buildToRawHttpMessage();
-            HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             handlerMapping.init(beanFactory);

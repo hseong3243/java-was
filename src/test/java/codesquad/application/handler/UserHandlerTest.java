@@ -2,16 +2,16 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.database.SessionMemoryStorage;
+import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.model.User;
+import codesquad.application.web.ModelAndView;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
-import codesquad.application.model.User;
-import codesquad.application.web.ModelAndView;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,8 +43,8 @@ class UserHandlerTest {
                     .method(HttpMethod.POST).path("/user/create")
                     .body("userId=userId&password=password&name=name&email=email")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            httpRequest = HttpRequest.parse(bis);
         }
 
         @Test
@@ -96,7 +96,8 @@ class UserHandlerTest {
                     .method(HttpMethod.GET).path("/user/list")
                     .cookie("SID", sessionId)
                     .buildToRawHttpMessage();
-            loginUserHttpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            loginUserHttpRequest = HttpRequest.parse(bis);
         }
 
         @Test
@@ -119,7 +120,8 @@ class UserHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/user/list")
                     .buildToRawHttpMessage();
-            HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             ModelAndView mav = userHandler.listUser(httpRequest);

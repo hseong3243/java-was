@@ -15,8 +15,8 @@ import codesquad.fixture.UserFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -54,8 +54,8 @@ class ArticleHandlerTest {
                     .method(HttpMethod.GET).path("/article/write")
                     .cookie("SID", sessionId)
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             ModelAndView mav = articleHandler.getArticleForm(httpRequest);
@@ -73,8 +73,8 @@ class ArticleHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/article/write")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             ModelAndView mav = articleHandler.getArticleForm(httpRequest);

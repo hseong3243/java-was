@@ -47,4 +47,9 @@ public record HttpHeaders(Map<String, String> headers) {
         String contentType = headers.get("Content-Type");
         return contentType != null && contentType.equals("application/x-www-form-urlencoded");
     }
+
+    public boolean isMultiPart() {
+        String contentType = headers.get("Content-Type");
+        return contentType != null && contentType.contains("multipart/form-data");
+    }
 }

@@ -2,17 +2,17 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.database.SessionMemoryStorage;
+import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.model.User;
 import codesquad.application.util.ResourceUtils;
+import codesquad.application.web.ModelAndView;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
-import codesquad.application.model.User;
-import codesquad.application.web.ModelAndView;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -109,8 +109,8 @@ class LoginHandlerTest {
                     .path("/login")
                     .body("userId=nope&password=nope")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             ModelAndView mav = loginHandler.login(httpRequest);
@@ -131,8 +131,8 @@ class LoginHandlerTest {
                     .path("/login")
                     .body("userId=userId&password=nope")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             ModelAndView mav = loginHandler.login(httpRequest);

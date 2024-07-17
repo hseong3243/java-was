@@ -13,7 +13,19 @@ public class HandlerMethod {
         this.method = method;
     }
 
-    public ModelAndView invoke(HttpRequest httpRequest) throws InvocationTargetException, IllegalAccessException {
-        return (ModelAndView) method.invoke(bean, httpRequest);
+    public ModelAndView invoke(HttpRequest httpRequest) throws Throwable {
+        try {
+            return (ModelAndView) method.invoke(bean, httpRequest);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        }
+    }
+
+    public Object getBean() {
+        return bean;
+    }
+
+    public Method getMethod() {
+        return method;
     }
 }

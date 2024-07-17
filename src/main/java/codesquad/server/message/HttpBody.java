@@ -19,6 +19,7 @@ public record HttpBody(Map<String, String> data) {
         String[] splitBody = body.split("&");
         for (String rawKeyValue : splitBody) {
             String[] keyValue = rawKeyValue.split("=");
+            keyValue = changeValueToEmptyString(keyValue);
             data.put(decode(keyValue[0]), decode(keyValue[1]));
         }
         return new HttpBody(data);
@@ -32,6 +33,13 @@ public record HttpBody(Map<String, String> data) {
         br.read(buffer);
         String body = new String(buffer);
         return body;
+    }
+
+    private static String[] changeValueToEmptyString(String[] keyValue) {
+        if(keyValue.length == 2) {
+            return keyValue;
+        }
+        return new String[]{keyValue[0], ""};
     }
 
     private static String decode(String value) {

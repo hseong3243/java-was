@@ -2,9 +2,9 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.handler.LoginHandler;
-import codesquad.application.database.Database;
-import codesquad.application.database.SessionStorage;
+import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.database.SessionMemoryStorage;
+import codesquad.application.util.ResourceUtils;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
@@ -20,30 +20,52 @@ import org.junit.jupiter.api.Test;
 
 class LoginHandlerTest {
 
-    @Nested
-    @DisplayName("handle 호출 시")
-    class HandleTest {
+    private LoginHandler loginHandler;
+    private UserMemoryDatabase userMemoryDatabase;
+    private SessionMemoryStorage sessionStorage;
 
-        private LoginHandler loginHandler;
-        private Database database;
-        private SessionStorage sessionStorage;
+    @BeforeEach
+    void setUp() {
+        userMemoryDatabase = new UserMemoryDatabase();
+        sessionStorage = new SessionMemoryStorage();
+        loginHandler = new LoginHandler(userMemoryDatabase, sessionStorage);
+    }
+
+    @Nested
+    @DisplayName("getLoginForm 호출 시")
+    class GetLoginFormTest {
+        @Test
+        @DisplayName("로그인 폼을 반환한다.")
+        void returnLoginForm() {
+            //given
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.GET).path("/login")
+                    .buildToHttpRequest();
+
+            //when
+            ModelAndView modelAndView = loginHandler.getLoginForm(httpRequest);
+
+            //then
+            assertThat(modelAndView.getView()).isEqualTo(ResourceUtils.getStaticFile("/login/index.html"));
+        }
+    }
+
+    @Nested
+    @DisplayName("login 호출 시")
+    class LoginTest {
+
         private HttpRequest httpRequest;
         private User user;
 
         @BeforeEach
         void setUp() {
-            database = new Database();
-            sessionStorage = new SessionStorage();
-            loginHandler = new LoginHandler(database, sessionStorage);
-            String rawHttpMessage = HttpFixture.builder()
+            httpRequest = HttpFixture.builder()
                     .method(HttpMethod.POST)
                     .path("/login")
                     .body("userId=userId&password=password")
-                    .build();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            httpRequest = HttpRequest.parse(br);
+                    .buildToHttpRequest();
             user = User.create("userId", "password", "name", "email@email.com");
-            database.addUser(user);
+            userMemoryDatabase.addUser(user);
         }
 
         @Test
@@ -86,7 +108,7 @@ class LoginHandlerTest {
                     .method(HttpMethod.POST)
                     .path("/login")
                     .body("userId=nope&password=nope")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             HttpRequest httpRequest = HttpRequest.parse(br);
 
@@ -108,7 +130,7 @@ class LoginHandlerTest {
                     .method(HttpMethod.POST)
                     .path("/login")
                     .body("userId=userId&password=nope")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             HttpRequest httpRequest = HttpRequest.parse(br);
 

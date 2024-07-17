@@ -2,9 +2,8 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.handler.MainHandler;
-import codesquad.application.database.Database;
-import codesquad.application.database.SessionStorage;
+import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.database.SessionMemoryStorage;
 import codesquad.fixture.HttpFixture;
 import codesquad.fixture.UserFixture;
 import codesquad.server.message.HttpMethod;
@@ -22,23 +21,23 @@ import org.junit.jupiter.api.Test;
 class MainHandlerTest {
 
     private MainHandler mainHandler;
-    private Database database;
-    private SessionStorage sessionStorage;
+    private UserMemoryDatabase userMemoryDatabase;
+    private SessionMemoryStorage sessionStorage;
     private HttpRequest httpRequest;
     private User user;
 
     @BeforeEach
     void setUp() {
-        database = new Database();
-        sessionStorage = new SessionStorage();
-        mainHandler = new MainHandler(database, sessionStorage);
+        userMemoryDatabase = new UserMemoryDatabase();
+        sessionStorage = new SessionMemoryStorage();
+        mainHandler = new MainHandler(userMemoryDatabase, sessionStorage);
         user = UserFixture.user();
-        database.addUser(user);
+        userMemoryDatabase.addUser(user);
         String sessionId = sessionStorage.store(user);
         String rawHttpMessage = HttpFixture.builder()
                 .method(HttpMethod.GET).path("/")
                 .cookie("SID", sessionId)
-                .build();
+                .buildToRawHttpMessage();
         httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
     }
 
@@ -78,7 +77,7 @@ class MainHandlerTest {
             //given
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/")
-                    .build();
+                    .buildToRawHttpMessage();
             HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
 
             //when

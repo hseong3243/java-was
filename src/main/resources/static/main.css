@@ -12,6 +12,20 @@
   flex-direction: column;
   align-items: start;
   gap: 16px;
+  width: 100%;
+}
+
+.post__list {
+  gap: 10px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 25.6px;
+  color: #14212b;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .post__account {
@@ -39,6 +53,20 @@
   height: 664px;
   border-radius: 8px;
   background: #d9d9d9;
+}
+
+.post__img_small {
+  width: 221px;
+  height: 221px;
+  border-radius: 8px;
+  background: #d9d9d9;
+}
+
+.post__title__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 221px;
 }
 
 .post__article {

@@ -2,7 +2,6 @@ package codesquad.application.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.Database;
 import codesquad.application.model.User;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,13 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class DataBaseTest {
+class UserMemoryDatabaseTest {
 
-    private Database database;
+    private UserMemoryDatabase userMemoryDatabase;
 
     @BeforeEach
     void setUp() {
-        database = new Database();
+        userMemoryDatabase = new UserMemoryDatabase();
     }
 
     @Nested
@@ -30,10 +29,10 @@ class DataBaseTest {
             User user = User.create("userId", "password", "name", "email@email.com");
 
             //when
-            database.addUser(user);
+            userMemoryDatabase.addUser(user);
 
             //then
-            Optional<User> optionalUser = database.findUserByUserId("userId");
+            Optional<User> optionalUser = userMemoryDatabase.findUserByUserId("userId");
             assertThat(optionalUser).isPresent().get().satisfies(findUser -> {
                 assertThat(findUser.getUserId()).isEqualTo("userId");
                 assertThat(findUser.getPassword()).isEqualTo("password");

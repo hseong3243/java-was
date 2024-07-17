@@ -57,10 +57,29 @@ public class BeanFactory {
 
     public <T> T getBean(Class<T> clazz) {
         return context.values().stream()
-                .filter(obj -> obj.getClass().equals(clazz))
+                .filter(obj -> isChild(obj.getClass(), clazz) || isImplementation(obj.getClass(), clazz))
                 .findFirst()
                 .map(clazz::cast)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 빈입니다."));
+    }
+
+    private <T> boolean isChild(Class<?> subClass, Class<T> targetClass) {
+        if(subClass.equals(Object.class)) {
+            return false;
+        }
+        if(subClass.equals(targetClass)) {
+            return true;
+        }
+        return isChild(subClass.getSuperclass(), targetClass);
+    }
+
+    private <T> boolean isImplementation(Class<?> subClass, Class<T> targetClass) {
+        for (Class<?> anInterface : subClass.getInterfaces()) {
+            if(anInterface.equals(targetClass)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Object> getBeans() {

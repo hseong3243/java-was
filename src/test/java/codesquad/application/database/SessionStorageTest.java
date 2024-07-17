@@ -2,7 +2,6 @@ package codesquad.application.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.SessionStorage;
 import codesquad.application.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,11 +10,11 @@ import org.junit.jupiter.api.Test;
 
 class SessionStorageTest {
 
-    private SessionStorage sessionStorage;
+    private SessionMemoryStorage sessionStorage;
 
     @BeforeEach
     void setUp() {
-        sessionStorage = new SessionStorage();
+        sessionStorage = new SessionMemoryStorage();
     }
 
     @Nested

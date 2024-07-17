@@ -7,7 +7,7 @@ import java.util.Map;
 public class ModelAndView {
 
     private final Map<String, String> headers = new HashMap<>();
-    private final Map<String, String> model = new HashMap<>();
+    private final Map<String, Object> model = new HashMap<>();
     private final byte[] view;
     private final HttpStatusCode statusCode;
 
@@ -32,7 +32,19 @@ public class ModelAndView {
         model.put(key, value);
     }
 
+    public void add(String key, Long value) {
+        model.put(key, String.valueOf(value));
+    }
+
+    public void add(String key, Object value) {
+        model.put(key, value);
+    }
+
     public String getModelValue(String key) {
+        return (String)model.get(key);
+    }
+
+    public Object get(String key) {
         return model.get(key);
     }
 

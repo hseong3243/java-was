@@ -2,9 +2,8 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.handler.UserHandler;
-import codesquad.application.database.Database;
-import codesquad.application.database.SessionStorage;
+import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.database.SessionMemoryStorage;
 import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
@@ -21,15 +20,15 @@ import org.junit.jupiter.api.Test;
 
 class UserHandlerTest {
 
-    private Database database;
+    private UserMemoryDatabase userMemoryDatabase;
     private UserHandler userHandler;
-    private SessionStorage sessionStorage;
+    private SessionMemoryStorage sessionStorage;
 
     @BeforeEach
     void setUp() {
-        database = new Database();
-        sessionStorage = new SessionStorage();
-        userHandler = new UserHandler(database, sessionStorage);
+        userMemoryDatabase = new UserMemoryDatabase();
+        sessionStorage = new SessionMemoryStorage();
+        userHandler = new UserHandler(userMemoryDatabase, sessionStorage);
     }
 
     @Nested
@@ -43,7 +42,7 @@ class UserHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.POST).path("/user/create")
                     .body("userId=userId&password=password&name=name&email=email")
-                    .build();
+                    .buildToRawHttpMessage();
             BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
             httpRequest = HttpRequest.parse(br);
         }
@@ -57,7 +56,7 @@ class UserHandlerTest {
             ModelAndView mav = userHandler.createUser(httpRequest);
 
             //then
-            Optional<User> optionalUser = database.findUserByUserId(mav.getModelValue("userId"));
+            Optional<User> optionalUser = userMemoryDatabase.findUserByUserId(mav.getModelValue("userId"));
             assertThat(optionalUser).isNotEmpty().get()
                     .satisfies(user -> {
                         assertThat(user.getUserId()).isEqualTo("userId");
@@ -91,12 +90,12 @@ class UserHandlerTest {
         @BeforeEach
         void setUp() {
             User user = User.create("userId", "password", "name", "email@email.com");
-            database.addUser(user);
+            userMemoryDatabase.addUser(user);
             String sessionId = sessionStorage.store(user);
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/user/list")
                     .cookie("SID", sessionId)
-                    .build();
+                    .buildToRawHttpMessage();
             loginUserHttpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
         }
 
@@ -119,7 +118,7 @@ class UserHandlerTest {
             //given
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/user/list")
-                    .build();
+                    .buildToRawHttpMessage();
             HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
 
             //when

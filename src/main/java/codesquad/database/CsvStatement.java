@@ -1,14 +1,18 @@
 package codesquad.database;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CsvStatement implements Statement {
@@ -97,9 +101,49 @@ public class CsvStatement implements Statement {
 
     @Override
     public int executeUpdate(String sql) throws SQLException {
-        return -1;
+        if (sql.trim().toLowerCase().startsWith("insert")) {
+            return executeInsert(sql);
+        }
+        // 다른 유형의 업데이트 문 처리 (UPDATE, DELETE 등)
+        throw new SQLException("Only INSERT statements are currently supported");
     }
 
+    private int executeInsert(String sql) throws SQLException {
+        InsertParser parser = new InsertParser(sql);
+        String tableName = parser.getTableName();
+        List<String> values = parser.getValues();
+
+        String csvFilePath = connection.getFilePath(tableName);
+
+        try {
+            return insertIntoCsv(csvFilePath, values);
+        } catch (IOException e) {
+            throw new SQLException("Error writing to CSV file", e);
+        }
+    }
+
+
+    private int insertIntoCsv(String csvFilePath, List<String> values) throws IOException, SQLException {
+        // CSV 파일의 헤더 읽기
+        List<String> headers;
+        try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
+            headers = Arrays.asList(reader.readLine().split(","));
+        }
+
+        // 값의 개수가 헤더의 개수와 일치하는지 확인
+        if (values.size() != headers.size()) {
+            throw new SQLException("Number of values does not match number of columns");
+        }
+
+        // 새 행을 CSV 파일에 추가
+        try (FileWriter fw = new FileWriter(csvFilePath, true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+            out.println(String.join(",", values));
+        }
+
+        return 1; // 삽입된 행의 수 반환
+    }
 
     @Override
     public void close() throws SQLException {

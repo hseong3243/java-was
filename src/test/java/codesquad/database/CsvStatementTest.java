@@ -38,49 +38,6 @@ class CsvStatementTest {
     }
 
     @Nested
-    @DisplayName("executeUpdate 호출 시")
-    class ExecuteUpdateTest {
-
-        @Test
-        @DisplayName("insert 문 실행 시")
-        void insert() throws SQLException {
-            //given
-            CsvConnection csvConnection = new CsvConnection("jdbc:csv:file/user.csv");
-            Statement statement = csvConnection.createStatement();
-
-            //when
-            statement.executeUpdate("insert into user values('insert', 'insert', 'insert', 'insert@test.com')");
-
-            //then
-            ResultSet rs = statement.executeQuery("select * from user where userId = 'insert'");
-            User user = userMapper(rs);
-            assertThat(user).isNotNull();
-            assertThat(user.getUserId()).isEqualTo("insert");
-            assertThat(user.getPassword()).isEqualTo("insert");
-            assertThat(user.getName()).isEqualTo("insert");
-            assertThat(user.getEmail()).isEqualTo("insert@test.com");
-        }
-
-        @Test
-        @DisplayName("delete 문 실행 시")
-        void delete() throws SQLException {
-            //given
-            CsvConnection csvConnection = new CsvConnection("jdbc:csv:file/user.csv");
-            Statement statement = csvConnection.createStatement();
-            statement.executeUpdate("insert into user values('delete', 'delete', 'delete', 'delete@test.com')");
-
-            //when
-            statement.executeUpdate("delete from user where userId = 'delete'");
-
-            //then
-            ResultSet rs = statement.executeQuery("select * from user where userId = 'delete'");
-            User user = userMapper(rs);
-            assertThat(user).isNull();
-        }
-
-    }
-
-    @Nested
     @DisplayName("executeQuery 호출 시")
     class ExecuteQueryTest {
 
@@ -117,7 +74,7 @@ class CsvStatementTest {
             String title = "";
             String content = "";
             String userId = "";
-            if(rs.next()) {
+            if (rs.next()) {
                 imageFilename = rs.getString("imageFilename");
                 articleId = rs.getString("articleId");
                 title = rs.getString("title");
@@ -129,6 +86,72 @@ class CsvStatementTest {
             assertThat(content).isEqualTo("aContent");
             assertThat(userId).isEqualTo("aUserId");
             assertThat(imageFilename).isEqualTo("aImageFilename");
+        }
+
+    }
+
+    @Nested
+    @DisplayName("executeUpdate 호출 시")
+    class ExecuteUpdateTest {
+
+        @Nested
+        @DisplayName("insert 문 실행 시")
+        class InsertTest {
+
+            @Test
+            @DisplayName("유저 데이터베이스에 데이터를 저장한다.")
+            void insertUser() throws SQLException {
+                //given
+                String sql = "insert into user values ('insert', 'insert', 'insert', 'insert@test.com')";
+
+                //when
+                stmt.executeUpdate(sql);
+
+                //then
+                ResultSet rs = stmt.executeQuery("select * from user where userId = 'insert'");
+                User user = userMapper(rs);
+                assertThat(user).isNotNull();
+                assertThat(user.getUserId()).isEqualTo("insert");
+                assertThat(user.getPassword()).isEqualTo("insert");
+                assertThat(user.getName()).isEqualTo("insert");
+                assertThat(user.getEmail()).isEqualTo("insert@test.com");
+            }
+
+            @Test
+            @DisplayName("게시글 데이터베이스에 데이터를 저장한다.")
+            void insertArticle() throws SQLException {
+                //given
+                String sql = "insert into article values ('5', 'testTitle', 'testContent', 'testUser', 'imagefile.png')";
+
+                //when
+                stmt.executeUpdate(sql);
+
+                //then
+                ResultSet rs = stmt.executeQuery("select * from article where articleId = '5'");
+                assertThat(rs.next()).isTrue();
+                assertThat(rs.getString("articleId")).isEqualTo("5");
+                assertThat(rs.getString("title")).isEqualTo("testTitle");
+                assertThat(rs.getString("content")).isEqualTo("testContent");
+                assertThat(rs.getString("userId")).isEqualTo("testUser");
+                assertThat(rs.getString("imageFilename")).isEqualTo("imagefile.png");
+            }
+        }
+
+        @Test
+        @DisplayName("delete 문 실행 시")
+        void delete() throws SQLException {
+            //given
+            CsvConnection csvConnection = new CsvConnection("jdbc:csv:file/user.csv");
+            Statement statement = csvConnection.createStatement();
+            statement.executeUpdate("insert into user values('delete', 'delete', 'delete', 'delete@test.com')");
+
+            //when
+            statement.executeUpdate("delete from user where userId = 'delete'");
+
+            //then
+            ResultSet rs = statement.executeQuery("select * from user where userId = 'delete'");
+            User user = userMapper(rs);
+            assertThat(user).isNull();
         }
 
     }

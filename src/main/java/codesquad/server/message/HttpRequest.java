@@ -1,10 +1,8 @@
 package codesquad.server.message;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
+import codesquad.server.utils.ByteUtils;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +24,14 @@ public record HttpRequest(
     }
 
     private static HttpRequest parseInner(InputStream clientInput) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(clientInput));
-        HttpStartLine httpStartLine = HttpStartLine.parse(br.readLine());
-        HttpHeaders httpHeaders = HttpHeaders.parse(br);
+        HttpStartLine httpStartLine = HttpStartLine.parse(new String(ByteUtils.readLine(clientInput)));
+        HttpHeaders httpHeaders = HttpHeaders.parse(clientInput);
         HttpCookies httpCookies = HttpCookies.parse(httpHeaders);
 
-        HttpBody httpBody = HttpBody.parse(br, clientInput, httpHeaders);
+        HttpBody httpBody = HttpBody.parse(clientInput, httpHeaders);
         return new HttpRequest(httpStartLine, httpHeaders, httpCookies, httpBody);
     }
+
 
     public HttpMethod method() {
         return httpStartLine.method();

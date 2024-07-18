@@ -1,7 +1,6 @@
 package codesquad.server.message;
 
 import codesquad.server.utils.MultiPartParser;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -15,7 +14,7 @@ public record HttpBody(Map<String, String> data, Map<String, HttpFile> files) {
 
     private static final Logger log = LoggerFactory.getLogger(HttpBody.class);
 
-    public static HttpBody parse(BufferedReader br, InputStream clientInput, HttpHeaders httpHeaders) throws IOException {
+    public static HttpBody parse(InputStream clientInput, HttpHeaders httpHeaders) throws IOException {
         Map<String, String> data = new HashMap<>();
         Map<String, HttpFile> files = new HashMap<>();
 
@@ -29,7 +28,7 @@ public record HttpBody(Map<String, String> data, Map<String, HttpFile> files) {
             return new HttpBody(data, files);
         }
 
-        String body = getRawBodyUsing(br, httpHeaders);
+        String body = getRawBodyUsing(clientInput, httpHeaders);
         String[] splitBody = body.split("&");
         for (String rawKeyValue : splitBody) {
             String[] keyValue = rawKeyValue.split("=");
@@ -39,14 +38,12 @@ public record HttpBody(Map<String, String> data, Map<String, HttpFile> files) {
         return new HttpBody(data, files);
     }
 
-    private static String getRawBodyUsing(BufferedReader br, HttpHeaders httpHeaders) throws IOException {
+    private static String getRawBodyUsing(InputStream clientInput, HttpHeaders httpHeaders) throws IOException {
         int contentLength = httpHeaders.get("Content-Length")
                 .map(Integer::parseInt)
                 .orElse(0);
-        char[] buffer = new char[contentLength];
-        br.read(buffer);
-        String body = new String(buffer);
-        return body;
+        byte[] bytes = clientInput.readNBytes(contentLength);
+        return new String(bytes);
     }
 
     private static String[] changeValueToEmptyString(String[] keyValue) {

@@ -53,16 +53,7 @@ public class MultiPartParser {
 
     private static byte[] readBytes(HttpHeaders httpHeaders, InputStream clientInput) throws IOException {
         int contentLength = Integer.parseInt(httpHeaders.get("Content-Length").get());
-        byte[] buffer = new byte[contentLength];
-        int bytesRead = 0;
-        while (bytesRead < contentLength) {
-            int result = clientInput.read(buffer, bytesRead, contentLength - bytesRead);
-            if (result == -1) {
-                break;
-            }
-            bytesRead += result;
-        }
-        return buffer;
+        return clientInput.readNBytes(contentLength);
     }
 
     private static int indexOf(byte[] body, byte[] target, int start) {

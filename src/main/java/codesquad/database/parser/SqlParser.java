@@ -1,4 +1,4 @@
-package codesquad.database;
+package codesquad.database.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;

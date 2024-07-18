@@ -1,4 +1,4 @@
-package codesquad.database;
+package codesquad.database.parser;
 
 public class DeleteParser {
     private String sql;

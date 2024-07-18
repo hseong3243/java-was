@@ -2,7 +2,7 @@ package codesquad.database;
 
 import codesquad.database.parser.DeleteParser;
 import codesquad.database.parser.InsertParser;
-import codesquad.database.parser.SqlParser;
+import codesquad.database.parser.SelectParser;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -29,7 +29,7 @@ public class CsvStatement implements Statement {
     @Override
     public ResultSet executeQuery(String sql) throws SQLException {
         // SQL 파싱
-        SqlParser parser = new SqlParser(sql);
+        SelectParser parser = new SelectParser(sql);
         String tableName = parser.getTableName();
         List<String> columns = parser.getColumns();
         String whereClause = parser.getWhereClause();

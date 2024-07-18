@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SqlParser {
+public class SelectParser {
 
     private String sql;
     private String tableName;
     private List<String> columns;
     private String whereClause;
 
-    public SqlParser(String sql) {
+    public SelectParser(String sql) {
         this.sql = sql.toLowerCase();
         parse();
     }

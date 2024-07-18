@@ -1,5 +1,2 @@
 articleId,title,content,userId,imageFilename
-1,aTitle,aContent,aUserId,aImageFilename
-1,testTitle,testContent,testUser,imagefile.png
-2,testTitle,testContent,testUser,imagefile.png
-5,testTitle,testContent,testUser,imagefile.png
+1,test,content,test,imagefile.png

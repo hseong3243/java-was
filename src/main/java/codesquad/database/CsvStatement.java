@@ -101,11 +101,12 @@ public class CsvStatement implements Statement {
 
     @Override
     public int executeUpdate(String sql) throws SQLException {
-        if (sql.trim().toLowerCase().startsWith("insert")) {
+        if (sql.startsWith("insert")) {
             return executeInsert(sql);
+        } else if (sql.startsWith("delete")) {
+            return executeDelete(sql);
         }
-        // 다른 유형의 업데이트 문 처리 (UPDATE, DELETE 등)
-        throw new SQLException("Only INSERT statements are currently supported");
+        throw new SQLException("Only INSERT and DELETE statements are currently supported");
     }
 
     private int executeInsert(String sql) throws SQLException {
@@ -121,7 +122,6 @@ public class CsvStatement implements Statement {
             throw new SQLException("Error writing to CSV file", e);
         }
     }
-
 
     private int insertIntoCsv(String csvFilePath, List<String> values) throws IOException, SQLException {
         // CSV 파일의 헤더 읽기
@@ -143,6 +143,72 @@ public class CsvStatement implements Statement {
         }
 
         return 1; // 삽입된 행의 수 반환
+    }
+
+    private int executeDelete(String sql) throws SQLException {
+        DeleteParser parser = new DeleteParser(sql);
+        String tableName = parser.getTableName();
+        String whereClause = parser.getWhereClause();
+
+        String csvFilePath = connection.getFilePath(tableName);
+
+        try {
+            return deleteFromCsv(csvFilePath, whereClause);
+        } catch (IOException e) {
+            throw new SQLException("Error manipulating CSV file", e);
+        }
+    }
+
+    private int deleteFromCsv(String csvFilePath, String whereClause) throws IOException, SQLException {
+        List<String> remainingLines = new ArrayList<>();
+        int deletedRows = 0;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
+            String header = reader.readLine();
+            remainingLines.add(header);  // 헤더 유지
+
+            String[] headerColumns = header.split(",");
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                if (!matchesDeleteWhereClause(headerColumns, values, whereClause)) {
+                    remainingLines.add(line);
+                } else {
+                    deletedRows++;
+                }
+            }
+        }
+
+        // 수정된 내용을 CSV 파일에 쓰기
+        try (PrintWriter writer = new PrintWriter(new FileWriter(csvFilePath))) {
+            for (String line : remainingLines) {
+                writer.println(line);
+            }
+        }
+
+        return deletedRows;
+    }
+
+    private boolean matchesDeleteWhereClause(String[] headers, String[] values, String whereClause) {
+        if (whereClause.isEmpty()) {
+            return true;  // WHERE 절이 없으면 모든 행 삭제
+        }
+
+        String[] parts = whereClause.split("=");
+        if (parts.length != 2) {
+            return false;  // 복잡한 조건은 무시
+        }
+
+        String columnName = parts[0].trim();
+        String value = parts[1].trim().replace("'", "").replace("\"", "");
+
+        for (int i = 0; i < headers.length; i++) {
+            if (headers[i].equalsIgnoreCase(columnName)) {
+                return values[i].trim().equalsIgnoreCase(value);
+            }
+        }
+
+        return false;
     }
 
     @Override

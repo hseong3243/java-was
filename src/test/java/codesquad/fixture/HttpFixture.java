@@ -53,9 +53,9 @@ public class HttpFixture {
 
         public String buildToRawHttpMessage() {
             return  """
-                    {method} {path} HTTP/1.1
-                    {header}
-                    {body}"""
+                    {method} {path} HTTP/1.1\r
+                    {header}\r
+                    {body}\r"""
                     .replace("{method}", method.name())
                     .replace("{path}", path)
                     .replace("{header}", toRequestHeader())
@@ -65,7 +65,7 @@ public class HttpFixture {
         private String toRequestHeader() {
             StringBuilder sb = new StringBuilder();
             headers.forEach((key, value) -> {
-                sb.append(key).append(": ").append(value).append("\n");
+                sb.append(key).append(": ").append(value).append("\r\n");
             });
             if (cookies.isEmpty()) {
                 return sb.toString();
@@ -75,7 +75,7 @@ public class HttpFixture {
             cookies.forEach((key, value) -> {
                 sb.append(key).append("=").append(value).append("; ");
             });
-            sb.append("\n");
+            sb.append("\r\n");
             return sb.toString();
         }
 

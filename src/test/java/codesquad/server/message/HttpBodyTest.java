@@ -32,7 +32,7 @@ class HttpBodyTest {
             BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawBody.getBytes()));
 
             //when
-            HttpBody httpBody = HttpBody.parse(br, bis, httpHeaders);
+            HttpBody httpBody = HttpBody.parse(bis, httpHeaders);
 
             //then
             assertThat(httpBody.data().get("data")).isNotNull().isBlank();

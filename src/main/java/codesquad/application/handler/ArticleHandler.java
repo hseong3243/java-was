@@ -1,6 +1,7 @@
 package codesquad.application.handler;
 
 import codesquad.application.database.ArticleDatabase;
+import codesquad.application.file.ImageStore;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.database.UserDatabase;
 import codesquad.application.model.Article;
@@ -8,6 +9,7 @@ import codesquad.application.model.User;
 import codesquad.application.util.ResourceUtils;
 import codesquad.application.web.ModelAndView;
 import codesquad.application.web.RequestMapping;
+import codesquad.server.message.HttpFile;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
@@ -19,11 +21,14 @@ public class ArticleHandler {
     private final ArticleDatabase articleDatabase;
     private final SessionStorage sessionStorage;
     private final UserDatabase userDatabase;
+    private final ImageStore imageStore;
 
-    public ArticleHandler(ArticleDatabase articleDatabase, SessionStorage sessionStorage, UserDatabase userDatabase) {
+    public ArticleHandler(ArticleDatabase articleDatabase, SessionStorage sessionStorage, UserDatabase userDatabase,
+                          ImageStore imageStore) {
         this.articleDatabase = articleDatabase;
         this.sessionStorage = sessionStorage;
         this.userDatabase = userDatabase;
+        this.imageStore = imageStore;
     }
 
     @RequestMapping(path = "/article/write", method = HttpMethod.GET)
@@ -61,8 +66,14 @@ public class ArticleHandler {
         User user = userDatabase.findUserByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
         Article article = Article.create(articleDatabase.getNextId(), data.title, data.content, user);
-        articleDatabase.save(article);
 
+        if(request.files().containsKey("image")) {
+            HttpFile httpFile = request.files().get("image");
+            String storeFilename = imageStore.store(httpFile);
+            article.setImage(storeFilename);
+        }
+
+        articleDatabase.save(article);
         ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/article?articleId=" + article.getArticleId());
         modelAndView.add("articleId", String.valueOf(article.getArticleId()));

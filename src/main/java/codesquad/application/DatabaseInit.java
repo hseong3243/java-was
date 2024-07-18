@@ -24,6 +24,7 @@ public class DatabaseInit {
                 + "title varchar(100) not null,"
                 + "content varchar(100) not null,"
                 + "user_id varchar(100),"
+                + "image_filename varchar(255),"
                 + " foreign key (user_id) references users (user_id))";
         String createSessionStorageSQL = "create table if not exists sessions ("
                 + "session_id varchar(100) primary key,"

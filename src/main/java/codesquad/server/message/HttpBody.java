@@ -17,6 +17,7 @@ public record HttpBody(Map<String, String> data, Map<String, HttpFile> files) {
 
     public static HttpBody parse(BufferedReader br, InputStream clientInput, HttpHeaders httpHeaders) throws IOException {
         Map<String, String> data = new HashMap<>();
+        Map<String, HttpFile> files = new HashMap<>();
 
         if (httpHeaders.isMultiPart()) {
             HttpBody parse = MultiPartParser.parse(httpHeaders, clientInput);
@@ -25,7 +26,7 @@ public record HttpBody(Map<String, String> data, Map<String, HttpFile> files) {
         }
 
         if (!httpHeaders.isFormData()) {
-            return new HttpBody(data, null);
+            return new HttpBody(data, files);
         }
 
         String body = getRawBodyUsing(br, httpHeaders);
@@ -35,7 +36,7 @@ public record HttpBody(Map<String, String> data, Map<String, HttpFile> files) {
             keyValue = changeValueToEmptyString(keyValue);
             data.put(decode(keyValue[0]), decode(keyValue[1]));
         }
-        return new HttpBody(data, null);
+        return new HttpBody(data, files);
     }
 
     private static String getRawBodyUsing(BufferedReader br, HttpHeaders httpHeaders) throws IOException {

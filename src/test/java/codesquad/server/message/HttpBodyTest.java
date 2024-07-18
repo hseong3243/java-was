@@ -50,16 +50,16 @@ class HttpBodyTest {
                 body = """
                     ------WebKitFormBoundaryCxwg8SiBWAa9oImg\r
                     Content-Disposition: form-data; name="title"\r
-                                        \r
+                    \r
                     qwer\r
                     ------WebKitFormBoundaryCxwg8SiBWAa9oImg\r
                     Content-Disposition: form-data; name="content"\r
-                                        \r
+                    \r
                     qwer\r
                     ------WebKitFormBoundaryCxwg8SiBWAa9oImg\r
                     Content-Disposition: form-data; name="image"; filename="carbon.png"\r
                     Content-Type: image/png\r
-                                        \r
+                    \r
                     asdf\r
                     ------WebKitFormBoundaryCxwg8SiBWAa9oImg--\r""";
                 httpHeaders.headers().put("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundaryCxwg8SiBWAa9oImg");
@@ -70,11 +70,10 @@ class HttpBodyTest {
             @DisplayName("파일 데이터를 파싱한다.")
             void parseFileData() throws IOException {
                 //given
-                BufferedReader br = new BufferedReader(new StringReader(body));
                 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(body.getBytes()));
 
                 //when
-                HttpBody httpBody = MultiPartParser.parse(httpHeaders, bis, br);
+                HttpBody httpBody = MultiPartParser.parse(httpHeaders, bis);
 
                 //then
                 assertThat(httpBody.files()).satisfies(files -> {
@@ -91,11 +90,10 @@ class HttpBodyTest {
             @DisplayName("파라미터를 파싱한다.")
             void parseParameters() throws IOException {
                 //given
-                BufferedReader br = new BufferedReader(new StringReader(body));
                 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(body.getBytes()));
 
                 //when
-                HttpBody httpBody = MultiPartParser.parse(httpHeaders, bis, br);
+                HttpBody httpBody = MultiPartParser.parse(httpHeaders, bis);
 
                 //then
                 assertThat(httpBody.data()).satisfies(data -> {

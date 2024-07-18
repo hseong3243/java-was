@@ -1,6 +1,8 @@
 package codesquad.base;
 
 import codesquad.application.bean.BeanFactory;
+import codesquad.application.database.SessionMemoryStorage;
+import codesquad.application.database.SessionStorage;
 import codesquad.application.web.AnnotationHandlerMapping;
 import codesquad.application.web.RequestDispatcher;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +12,7 @@ public abstract class ApplicationTest {
     protected BeanFactory beanFactory;
     protected AnnotationHandlerMapping handlerMapping;
     protected RequestDispatcher requestDispatcher;
+    protected SessionStorage sessionStorage;
 
     @BeforeEach
     void setUp() {
@@ -19,6 +22,8 @@ public abstract class ApplicationTest {
         handlerMapping = new AnnotationHandlerMapping();
         handlerMapping.init(beanFactory);
 
-        requestDispatcher = new RequestDispatcher(handlerMapping);
+        sessionStorage = new SessionMemoryStorage();
+
+        requestDispatcher = new RequestDispatcher(handlerMapping, sessionStorage);
     }
 }

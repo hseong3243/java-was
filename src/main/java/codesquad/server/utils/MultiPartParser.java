@@ -98,6 +98,7 @@ public class MultiPartParser {
                 partHeaderEnd + NEW_LINE.length); // content-type \r\n 첫 위치
         String partContentType = new String(
                 Arrays.copyOfRange(body, partHeaderEnd + NEW_LINE.length, contentTypeNewLinePos));
+        partContentType = partContentType.split(":")[1].trim();
         byte[] fileBytes = Arrays.copyOfRange(
                 body, contentTypeNewLinePos + NEW_LINE.length * 2, delimiterPos - NEW_LINE.length);
         log.debug("content-type={}, filename={}, length={}", partContentType, filename, fileBytes.length);

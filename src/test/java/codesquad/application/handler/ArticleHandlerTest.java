@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.database.ArticleMemoryDatabase;
+import codesquad.application.file.ImageStore;
 import codesquad.application.database.SessionMemoryStorage;
 import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.model.Article;
@@ -12,6 +13,7 @@ import codesquad.application.util.ResourceUtils;
 import codesquad.application.web.ModelAndView;
 import codesquad.fixture.HttpFixture;
 import codesquad.fixture.UserFixture;
+import codesquad.server.message.HttpFile;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
@@ -31,13 +33,15 @@ class ArticleHandlerTest {
     private SessionMemoryStorage sessionStorage;
     private ArticleMemoryDatabase articleDatabase;
     private UserMemoryDatabase userMemoryDatabase;
+    private ImageStore imageStore;
 
     @BeforeEach
     void setUp() {
         sessionStorage = new SessionMemoryStorage();
         articleDatabase = new ArticleMemoryDatabase();
         userMemoryDatabase = new UserMemoryDatabase();
-        articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userMemoryDatabase);
+        imageStore = new ImageStore();
+        articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userMemoryDatabase, imageStore);
     }
 
     @Nested
@@ -115,6 +119,31 @@ class ArticleHandlerTest {
                         assertThat(article.getContent()).isEqualTo("content");
                         assertThat(article.getAuthor().getUserId()).isEqualTo(user.getUserId());
                         assertThat(article.getAuthor().getName()).isEqualTo(user.getName());
+                    });
+        }
+
+        @Test
+        @DisplayName("이미지가 존재하는 경우 이미지 경로를 함께 저장한다.")
+        void ifImageExists_ThenStoreImagePath() {
+            //given
+            User user = UserFixture.user();
+            userMemoryDatabase.addUser(user);
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.POST).path("/article")
+                    .cookie("SID", sessionStorage.store(user))
+                    .body("title=title&content=content")
+                    .buildToHttpRequest();
+            httpRequest.files().put("image", new HttpFile("asdf.png", "image/png", "file".getBytes()));
+
+            //when
+            ModelAndView mav = articleHandler.postArticle(httpRequest);
+
+            //then
+            assertThat(mav.getModelValue("articleId")).isNotNull().asLong().isEqualTo(1);
+            Optional<Article> optionalArticle = articleDatabase.findById(1L);
+            assertThat(optionalArticle).isNotEmpty().get()
+                    .satisfies(article -> {
+                        assertThat(article.getImageFilename()).isNotBlank();
                     });
         }
 

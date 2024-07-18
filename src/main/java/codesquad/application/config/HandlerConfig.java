@@ -19,8 +19,8 @@ public class HandlerConfig {
     }
 
     @Bean
-    public MainHandler mainHandler(UserDatabase userDatabase, SessionStorage sessionStorage) {
-        return new MainHandler(userDatabase, sessionStorage);
+    public MainHandler mainHandler(UserDatabase userDatabase, SessionStorage sessionStorage, ArticleDatabase articleDatabase) {
+        return new MainHandler(userDatabase, sessionStorage, articleDatabase);
     }
 
     @Bean

@@ -1,7 +1,7 @@
 package codesquad.base;
 
 import codesquad.application.bean.BeanFactory;
-import codesquad.application.database.SessionMemoryStorage;
+import codesquad.application.database.memory.SessionMemoryStorage;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.web.AnnotationHandlerMapping;
 import codesquad.application.web.RequestDispatcher;

@@ -1,5 +1,6 @@
-package codesquad.application.database;
+package codesquad.application.database.memory;
 
+import codesquad.application.database.SessionStorage;
 import codesquad.application.model.User;
 import java.util.Map;
 import java.util.Optional;

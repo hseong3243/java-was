@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.bean.BeanFactory;
-import codesquad.application.database.ArticleJdbcDatabase;
-import codesquad.application.database.SessionJdbcStorage;
-import codesquad.application.database.UserJdbcDatabase;
+import codesquad.application.database.h2.ArticleJdbcDatabase;
+import codesquad.application.database.h2.SessionJdbcStorage;
+import codesquad.application.database.h2.UserJdbcDatabase;
 import codesquad.application.handler.UserHandler;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;

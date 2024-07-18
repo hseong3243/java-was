@@ -2,12 +2,12 @@ package codesquad.application.config;
 
 import codesquad.application.bean.Bean;
 import codesquad.application.database.ArticleDatabase;
-import codesquad.application.database.ArticleJdbcDatabase;
+import codesquad.application.database.h2.ArticleJdbcDatabase;
 import codesquad.application.file.ImageStore;
-import codesquad.application.database.SessionJdbcStorage;
+import codesquad.application.database.h2.SessionJdbcStorage;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.database.UserDatabase;
-import codesquad.application.database.UserJdbcDatabase;
+import codesquad.application.database.h2.UserJdbcDatabase;
 
 public class DatabaseConfig {
 

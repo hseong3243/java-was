@@ -2,6 +2,7 @@ package codesquad.application.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import codesquad.application.database.memory.UserMemoryDatabase;
 import codesquad.application.model.User;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

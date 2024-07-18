@@ -21,7 +21,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 public class CsvConnection implements Connection {
-    private String directory;
+    private final String directory;
 
     public CsvConnection(String directory) {
         this.directory = directory;

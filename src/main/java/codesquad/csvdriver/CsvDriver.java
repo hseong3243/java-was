@@ -8,14 +8,17 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CsvDriver implements Driver {
+
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(CsvDriver.class);
 
     static {
         try {
             DriverManager.registerDriver(new CsvDriver());
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("SQL 에러 발생", e);
         }
     }
 

@@ -25,9 +25,9 @@ import java.util.Map;
 
 public class CsvResultSet implements ResultSet {
 
-    private List<String[]> data;
-    private List<Integer> columnIndices;
-    private String[] headers;
+    private final List<String[]> data;
+    private final List<Integer> columnIndices;
+    private final String[] headers;
     private int currentRow = -1;
 
     public CsvResultSet(List<String[]> data, List<Integer> columnIndices, String[] headers) {

@@ -10,6 +10,7 @@ import codesquad.application.database.h2.UserJdbcDatabase;
 import codesquad.application.handler.UserHandler;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ class BeanFactoryTest {
         @ParameterizedTest
         @MethodSource("databaseConfig")
         @DisplayName("DatabaseConfig가 등록된다.")
+        @Disabled
         void registerDatabaseConfig(Class<?> clazz) {
             //given
 

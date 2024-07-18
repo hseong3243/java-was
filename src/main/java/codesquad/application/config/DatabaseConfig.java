@@ -2,28 +2,28 @@ package codesquad.application.config;
 
 import codesquad.application.bean.Bean;
 import codesquad.application.database.ArticleDatabase;
-import codesquad.application.database.h2.ArticleJdbcDatabase;
-import codesquad.application.file.ImageStore;
-import codesquad.application.database.h2.SessionJdbcStorage;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.database.UserDatabase;
-import codesquad.application.database.h2.UserJdbcDatabase;
+import codesquad.application.database.csv.ArticleCsvDatabase;
+import codesquad.application.database.csv.UserCsvDatabase;
+import codesquad.application.database.memory.SessionMemoryStorage;
+import codesquad.application.file.ImageStore;
 
 public class DatabaseConfig {
 
     @Bean
     public UserDatabase userDatabase() {
-        return new UserJdbcDatabase();
+        return new UserCsvDatabase();
     }
 
     @Bean
     public SessionStorage sessionStorage() {
-        return new SessionJdbcStorage();
+        return new SessionMemoryStorage();
     }
 
     @Bean
     public ArticleDatabase articleDatabase() {
-        return new ArticleJdbcDatabase();
+        return new ArticleCsvDatabase();
     }
 
     @Bean

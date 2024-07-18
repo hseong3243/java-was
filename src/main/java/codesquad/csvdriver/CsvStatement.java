@@ -1,8 +1,8 @@
-package codesquad.database;
+package codesquad.csvdriver;
 
-import codesquad.database.parser.DeleteParser;
-import codesquad.database.parser.InsertParser;
-import codesquad.database.parser.SelectParser;
+import codesquad.csvdriver.parser.DeleteParser;
+import codesquad.csvdriver.parser.InsertParser;
+import codesquad.csvdriver.parser.SelectParser;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;

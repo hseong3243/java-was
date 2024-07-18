@@ -1,4 +1,4 @@
-package codesquad.database;
+package codesquad.csvdriver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

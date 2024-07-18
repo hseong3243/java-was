@@ -1,4 +1,4 @@
-package codesquad.database;
+package codesquad.csvdriver;
 
 import java.io.InputStream;
 import java.io.Reader;

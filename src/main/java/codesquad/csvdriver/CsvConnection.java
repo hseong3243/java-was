@@ -1,4 +1,4 @@
-package codesquad.database;
+package codesquad.csvdriver;
 
 import java.io.File;
 import java.sql.Array;

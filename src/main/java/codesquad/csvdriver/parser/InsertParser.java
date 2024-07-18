@@ -1,4 +1,4 @@
-package codesquad.database.parser;
+package codesquad.csvdriver.parser;
 
 import java.util.Arrays;
 import java.util.List;

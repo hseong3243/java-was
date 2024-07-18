@@ -38,6 +38,10 @@ public class Article {
         return author;
     }
 
+    public String getUsername() {
+        return author.getName();
+    }
+
     public String getImageFilename() {
         return imageFilename;
     }

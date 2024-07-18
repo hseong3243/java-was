@@ -81,7 +81,7 @@ class ArticleHandlerTest {
 
             //then
             assertThat(mav.getView()).isEmpty();
-            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.MOVED_PERMANENTLY);
+            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
             assertThat(mav.getHeaders().get("Location")).isNotEmpty().isEqualTo("/login");
         }
     }
@@ -131,7 +131,7 @@ class ArticleHandlerTest {
 
             //then
             assertThat(mav.getView()).isEmpty();
-            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.MOVED_PERMANENTLY);
+            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
             assertThat(mav.getHeaders().get("Location")).isNotEmpty().isEqualTo("/login");
         }
 

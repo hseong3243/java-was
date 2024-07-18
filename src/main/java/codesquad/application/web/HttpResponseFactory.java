@@ -41,7 +41,7 @@ public final class HttpResponseFactory {
     }
 
     public static HttpResponse invalidateSession() {
-        HttpResponse httpResponse = new HttpResponse(HTTP1_1, HttpStatusCode.MOVED_PERMANENTLY, "");
+        HttpResponse httpResponse = new HttpResponse(HTTP1_1, HttpStatusCode.FOUND, "");
         httpResponse.addHeader("Location", "/login");
         httpResponse.addHeader("Set-Cookie", "SID=-1; Max-Age=0");
         return httpResponse;

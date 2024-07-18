@@ -63,7 +63,7 @@ public class ArticleHandler {
         Article article = Article.create(articleDatabase.getNextId(), data.title, data.content, user);
         articleDatabase.save(article);
 
-        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.MOVED_PERMANENTLY);
+        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/article?articleId=" + article.getArticleId());
         modelAndView.add("articleId", String.valueOf(article.getArticleId()));
         return modelAndView;
@@ -74,7 +74,7 @@ public class ArticleHandler {
     }
 
     private ModelAndView redirectToLogin() {
-        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.MOVED_PERMANENTLY);
+        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/login");
         return modelAndView;
     }

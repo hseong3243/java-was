@@ -35,9 +35,9 @@ public class RequestDispatcher implements ServerHandler {
     private HttpResponse dispatchInternal(HttpRequest httpRequest) throws Throwable {
         log.debug("사용자 세션 정보 체크");
         Optional<String> optionalSessionId = Optional.ofNullable(httpRequest.cookies().get("SID"));
-        if(optionalSessionId.isPresent()) {
+        if (optionalSessionId.isPresent()) {
             String sessionId = optionalSessionId.get();
-            if(sessionStorage.findLoginUser(sessionId).isEmpty()) {
+            if (sessionStorage.findLoginUser(sessionId).isEmpty()) {
                 return HttpResponseFactory.invalidateSession();
             }
         }
@@ -49,6 +49,16 @@ public class RequestDispatcher implements ServerHandler {
         ModelAndView modelAndView = handlerMethod.invoke(httpRequest);
 
         log.debug("뷰 렌더링");
+        String contentType = getContentType(httpRequest.requestUrl());
+        if(!contentType.contains("text/html")) {
+            HttpResponse httpResponse = new HttpResponse(
+                    HTTP_1_1,
+                    modelAndView.getStatusCode(),
+                    modelAndView.getView());
+            httpResponse.addHeaders(modelAndView.getHeaders());
+            httpResponse.addHeader("Content-Type", contentType);
+            return httpResponse;
+        }
         String renderedView = TemplateEngine.render(new String(modelAndView.getView()), modelAndView);
         modelAndView.addHeader("Content-Length", String.valueOf(renderedView.getBytes().length));
 
@@ -58,7 +68,7 @@ public class RequestDispatcher implements ServerHandler {
                 modelAndView.getStatusCode(),
                 renderedView);
         httpResponse.addHeaders(modelAndView.getHeaders());
-        httpResponse.addHeader("Content-Type", getContentType(httpRequest.requestUrl()));
+        httpResponse.addHeader("Content-Type", contentType);
         return httpResponse;
     }
 
@@ -78,7 +88,7 @@ public class RequestDispatcher implements ServerHandler {
             httpResponse = HttpResponseFactory.badRequest();
         } else if (e instanceof NoSuchElementException) {
             httpResponse = HttpResponseFactory.notFound();
-        } else if(e instanceof MethodNotAllowedException methodNotAllowedException) {
+        } else if (e instanceof MethodNotAllowedException methodNotAllowedException) {
             httpResponse = HttpResponseFactory.methodNotAllowed(methodNotAllowedException.getAllowedMethods());
         } else {
             httpResponse = HttpResponseFactory.internalServerError();

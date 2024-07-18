@@ -88,6 +88,7 @@ public class ArticleJdbcDatabase implements ArticleDatabase {
                                 rs.getString("name")
                         )
                 );
+                article.setImage(rs.getString("image_filename"));
                 return Optional.of(article);
             }
             return Optional.empty();

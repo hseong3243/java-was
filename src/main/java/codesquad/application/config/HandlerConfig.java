@@ -29,8 +29,8 @@ public class HandlerConfig {
     }
 
     @Bean
-    public StaticResourceHandler staticResourceHandler() {
-        return new StaticResourceHandler();
+    public StaticResourceHandler staticResourceHandler(ImageStore imageStore) {
+        return new StaticResourceHandler(imageStore);
     }
 
     @Bean

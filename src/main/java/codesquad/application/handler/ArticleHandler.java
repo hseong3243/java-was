@@ -112,6 +112,7 @@ public class ArticleHandler {
         modelAndView.add("content", article.getContent());
         modelAndView.add("userId", article.getAuthor().getUserId());
         modelAndView.add("username", article.getAuthor().getName());
+        modelAndView.add("imageFilename", article.getImageFilename());
         return modelAndView;
     }
 

@@ -5,6 +5,7 @@ public class Article {
     private final String title;
     private final String content;
     private final Author author;
+    private String imageFilename;
 
     private Article(Long articleId, String title, String content, Author author) {
         this.articleId = articleId;
@@ -35,5 +36,17 @@ public class Article {
 
     public Author getAuthor() {
         return author;
+    }
+
+    public String getUsername() {
+        return author.getName();
+    }
+
+    public String getImageFilename() {
+        return imageFilename;
+    }
+
+    public void setImage(String storeFilename) {
+        this.imageFilename = storeFilename;
     }
 }

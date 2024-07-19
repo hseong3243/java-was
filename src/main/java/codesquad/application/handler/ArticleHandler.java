@@ -1,6 +1,7 @@
 package codesquad.application.handler;
 
 import codesquad.application.database.ArticleDatabase;
+import codesquad.application.file.ImageStore;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.database.UserDatabase;
 import codesquad.application.model.Article;
@@ -8,6 +9,7 @@ import codesquad.application.model.User;
 import codesquad.application.util.ResourceUtils;
 import codesquad.application.web.ModelAndView;
 import codesquad.application.web.RequestMapping;
+import codesquad.server.message.HttpFile;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
@@ -19,11 +21,14 @@ public class ArticleHandler {
     private final ArticleDatabase articleDatabase;
     private final SessionStorage sessionStorage;
     private final UserDatabase userDatabase;
+    private final ImageStore imageStore;
 
-    public ArticleHandler(ArticleDatabase articleDatabase, SessionStorage sessionStorage, UserDatabase userDatabase) {
+    public ArticleHandler(ArticleDatabase articleDatabase, SessionStorage sessionStorage, UserDatabase userDatabase,
+                          ImageStore imageStore) {
         this.articleDatabase = articleDatabase;
         this.sessionStorage = sessionStorage;
         this.userDatabase = userDatabase;
+        this.imageStore = imageStore;
     }
 
     @RequestMapping(path = "/article/write", method = HttpMethod.GET)
@@ -61,9 +66,15 @@ public class ArticleHandler {
         User user = userDatabase.findUserByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
         Article article = Article.create(articleDatabase.getNextId(), data.title, data.content, user);
-        articleDatabase.save(article);
 
-        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.MOVED_PERMANENTLY);
+        if(request.files().containsKey("image")) {
+            HttpFile httpFile = request.files().get("image");
+            String storeFilename = imageStore.store(httpFile);
+            article.setImage(storeFilename);
+        }
+
+        articleDatabase.save(article);
+        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/article?articleId=" + article.getArticleId());
         modelAndView.add("articleId", String.valueOf(article.getArticleId()));
         return modelAndView;
@@ -74,7 +85,7 @@ public class ArticleHandler {
     }
 
     private ModelAndView redirectToLogin() {
-        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.MOVED_PERMANENTLY);
+        ModelAndView modelAndView = new ModelAndView(HttpStatusCode.FOUND);
         modelAndView.addHeader("Location", "/login");
         return modelAndView;
     }
@@ -96,18 +107,41 @@ public class ArticleHandler {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 게시글입니다."));
         ModelAndView modelAndView = new ModelAndView(ResourceUtils.getStaticFile("/article/index.html"),
                 HttpStatusCode.OK);
+
+        String sessionId = request.httpCookies().cookies().get("SID");
+        if(sessionId != null) {
+            String userId = sessionStorage.findLoginUser(sessionId)
+                    .orElseThrow(() -> new NoSuchElementException("세션이 유효하지 않습니다."));
+            User user = userDatabase.findUserByUserId(userId)
+                    .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
+            modelAndView.add("userId", user.getUserId());
+            modelAndView.add("name", user.getName());
+            modelAndView.add("email", user.getEmail());
+        }
         modelAndView.add("articleId", article.getArticleId());
         modelAndView.add("title", article.getTitle());
         modelAndView.add("content", article.getContent());
         modelAndView.add("userId", article.getAuthor().getUserId());
         modelAndView.add("username", article.getAuthor().getName());
+        modelAndView.add("imageFilename", article.getImageFilename());
         return modelAndView;
     }
 
     @RequestMapping(path = "/articles", method = HttpMethod.GET)
     public ModelAndView getArticles(HttpRequest request) {
-        List<Article> articles = articleDatabase.findAll();
         ModelAndView modelAndView = new ModelAndView(ResourceUtils.getStaticFile("/article/articleList.html"));
+        String sessionId = request.httpCookies().cookies().get("SID");
+        if(sessionId != null) {
+            String userId = sessionStorage.findLoginUser(sessionId)
+                    .orElseThrow(() -> new NoSuchElementException("세션이 유효하지 않습니다."));
+            User user = userDatabase.findUserByUserId(userId)
+                    .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
+            modelAndView.add("userId", user.getUserId());
+            modelAndView.add("name", user.getName());
+            modelAndView.add("email", user.getEmail());
+        }
+
+        List<Article> articles = articleDatabase.findAll();
         modelAndView.add("articles", articles);
         return modelAndView;
     }

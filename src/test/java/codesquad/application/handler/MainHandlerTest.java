@@ -2,17 +2,19 @@ package codesquad.application.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.database.ArticleDatabase;
+import codesquad.application.database.ArticleMemoryDatabase;
 import codesquad.application.database.SessionMemoryStorage;
+import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.model.User;
+import codesquad.application.web.ModelAndView;
 import codesquad.fixture.HttpFixture;
 import codesquad.fixture.UserFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
-import codesquad.application.model.User;
-import codesquad.application.web.ModelAndView;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +25,7 @@ class MainHandlerTest {
     private MainHandler mainHandler;
     private UserMemoryDatabase userMemoryDatabase;
     private SessionMemoryStorage sessionStorage;
+    private ArticleDatabase articleDatabase;
     private HttpRequest httpRequest;
     private User user;
 
@@ -30,7 +33,8 @@ class MainHandlerTest {
     void setUp() {
         userMemoryDatabase = new UserMemoryDatabase();
         sessionStorage = new SessionMemoryStorage();
-        mainHandler = new MainHandler(userMemoryDatabase, sessionStorage);
+        articleDatabase = new ArticleMemoryDatabase();
+        mainHandler = new MainHandler(userMemoryDatabase, sessionStorage, articleDatabase);
         user = UserFixture.user();
         userMemoryDatabase.addUser(user);
         String sessionId = sessionStorage.store(user);
@@ -38,7 +42,7 @@ class MainHandlerTest {
                 .method(HttpMethod.GET).path("/")
                 .cookie("SID", sessionId)
                 .buildToRawHttpMessage();
-        httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
+        httpRequest = HttpRequest.parse(new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes())));
     }
 
     @Nested
@@ -51,7 +55,7 @@ class MainHandlerTest {
             //given
 
             //when
-            ModelAndView mav = mainHandler.mainPage(httpRequest);
+            ModelAndView mav = mainHandler.getArticles(httpRequest);
 
             //then
             assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.OK);
@@ -64,7 +68,7 @@ class MainHandlerTest {
             //given
 
             //when
-            ModelAndView mav = mainHandler.mainPage(httpRequest);
+            ModelAndView mav = mainHandler.getArticles(httpRequest);
 
             //then
             assertThat(mav.getModelValue("userId")).isEqualTo(user.getUserId());
@@ -78,10 +82,11 @@ class MainHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/")
                     .buildToRawHttpMessage();
-            HttpRequest httpRequest = HttpRequest.parse(new BufferedReader(new StringReader(rawHttpMessage)));
+            HttpRequest httpRequest = HttpRequest.parse(
+                    new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes())));
 
             //when
-            ModelAndView mav = mainHandler.mainPage(httpRequest);
+            ModelAndView mav = mainHandler.getArticles(httpRequest);
 
             //then
             assertThat(mav.getModelValue("userId")).isNull();

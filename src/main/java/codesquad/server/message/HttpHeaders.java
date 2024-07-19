@@ -1,7 +1,8 @@
 package codesquad.server.message;
 
-import java.io.BufferedReader;
+import codesquad.server.utils.ByteUtils;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,10 +12,10 @@ public record HttpHeaders(Map<String, String> headers) {
 
     private static final String LINE_SEPARATOR = "\n";
 
-    public static HttpHeaders parse(BufferedReader br) throws IOException {
+    public static HttpHeaders parse(InputStream clientInput) throws IOException {
         Map<String, String> headers = new HashMap<>();
         String header;
-        while (!(header = br.readLine()).isEmpty()) {
+        while (!(header = new String(ByteUtils.readLine(clientInput))).isEmpty()) {
             String[] keyValue = header.split(": ");
             validateHeader(keyValue);
             headers.put(keyValue[0], keyValue[1]);
@@ -46,5 +47,10 @@ public record HttpHeaders(Map<String, String> headers) {
     public boolean isFormData() {
         String contentType = headers.get("Content-Type");
         return contentType != null && contentType.equals("application/x-www-form-urlencoded");
+    }
+
+    public boolean isMultiPart() {
+        String contentType = headers.get("Content-Type");
+        return contentType != null && contentType.contains("multipart/form-data");
     }
 }

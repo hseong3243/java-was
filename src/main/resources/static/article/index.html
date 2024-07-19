@@ -10,11 +10,19 @@
   <body>
     <div class="container">
       <header class="header">
-        <a href="/"><img src="../img/signiture.svg" /></a>
-        {{#if userId}}
-        <p>{{userId}}</p>
-        {{else}}
+        <a href="/"><img src="./img/signiture.svg" /></a>
         <ul class="header__menu">
+          <li class="header__menu__item">
+            <a class="btn btn_contained btn_size_s" href="/articles">글 목록</a>
+          </li>
+          {{#if userId}}
+          <li class="header__menu__item">
+            <a class="btn btn_contained btn_size_s" href="/article/write">글쓰기</a>
+          </li>
+          <li class="header__menu__item">
+            <p>{{userId}}</p>
+          </li>
+          {{else}}
           <li class="header__menu__item">
             <a class="btn btn_contained btn_size_s" href="/login">로그인</a>
           </li>
@@ -23,8 +31,8 @@
               회원 가입
             </a>
           </li>
+          {{/if}}
         </ul>
-        {{/if}}
       </header>
       <div class="wrapper">
         <div class="post">
@@ -32,7 +40,7 @@
             <img class="post__account__img" />
             <p class="post__account__nickname">{{username}}</p>
           </div>
-          <img class="post__img" />
+          <img src="{{imageFilename}}" class="post__img" />
           <div class="post__menu">
             <ul class="post__menu__personal">
               <li>

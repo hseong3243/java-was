@@ -2,10 +2,8 @@ package codesquad.server;
 
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import org.slf4j.Logger;
@@ -38,14 +36,13 @@ public class ClientRequest implements Runnable {
     private void process(InputStream clientInput, OutputStream clientOutput) throws IOException {
         log.debug("Client connected");
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(clientInput));
-        HttpRequest httpRequest = HttpRequest.parse(br);
-        log.debug("HTTP 요청 메시지 해석={}", httpRequest);
+        HttpRequest httpRequest = HttpRequest.parse(clientInput);
+        log.debug("HTTP 요청={}", httpRequest.requestUrl());
 
         HttpResponse httpResponse = serverHandler.handle(httpRequest);
         httpResponse.write(clientOutput);
         clientOutput.flush();
-        log.debug("HTTP 응답 메시지 출력={}", httpRequest);
+        log.debug("HTTP 응답 메시지 출력");
 
         clientSocket.close();
         log.debug("Client disconnected");

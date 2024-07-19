@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.fixture.HttpFixture;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,10 +28,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //then
             assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
@@ -53,10 +53,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //then
             assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
@@ -83,10 +83,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //then
             assertThat(httpRequest.method()).isEqualTo(HttpMethod.GET);
@@ -108,10 +108,10 @@ class HttpRequestTest {
                     .header("Connection", "keep-alive")
                     .header("Cache-Control", "max-age=0")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
 
             //when
-            Exception exception = catchException(() -> HttpRequest.parse(br));
+            Exception exception = catchException(() -> HttpRequest.parse(bis));
 
             //then
             assertThat(exception).isInstanceOf(IllegalArgumentException.class);
@@ -127,10 +127,10 @@ class HttpRequestTest {
                     .header("Host", "localhost:8080")
                     .body("userId=userId&nickname=nickname")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
 
             //when
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //then
             assertThat(httpRequest.httpBody().data()).satisfies(data -> {

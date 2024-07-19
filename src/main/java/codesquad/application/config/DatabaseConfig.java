@@ -3,6 +3,7 @@ package codesquad.application.config;
 import codesquad.application.bean.Bean;
 import codesquad.application.database.ArticleDatabase;
 import codesquad.application.database.ArticleJdbcDatabase;
+import codesquad.application.file.ImageStore;
 import codesquad.application.database.SessionJdbcStorage;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.database.UserDatabase;
@@ -23,5 +24,10 @@ public class DatabaseConfig {
     @Bean
     public ArticleDatabase articleDatabase() {
         return new ArticleJdbcDatabase();
+    }
+
+    @Bean
+    public ImageStore imageDatabase() {
+        return new ImageStore();
     }
 }

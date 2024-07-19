@@ -19,7 +19,7 @@ public class ArticleJdbcDatabase implements ArticleDatabase {
 
     @Override
     public Long save(Article article) {
-        String sql = "insert into article(article_id, title, content, user_id) values(?, ?, ?, ?)";
+        String sql = "insert into article(article_id, title, content, user_id, image_filename) values(?, ?, ?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -30,6 +30,7 @@ public class ArticleJdbcDatabase implements ArticleDatabase {
             pstmt.setString(2, article.getTitle());
             pstmt.setString(3, article.getContent());
             pstmt.setString(4, article.getAuthor().getUserId());
+            pstmt.setString(5, article.getImageFilename());
             pstmt.executeUpdate();
             return article.getArticleId();
         } catch (SQLException e) {
@@ -87,6 +88,7 @@ public class ArticleJdbcDatabase implements ArticleDatabase {
                                 rs.getString("name")
                         )
                 );
+                article.setImage(rs.getString("image_filename"));
                 return Optional.of(article);
             }
             return Optional.empty();
@@ -120,6 +122,7 @@ public class ArticleJdbcDatabase implements ArticleDatabase {
                                 rs.getString("name")
                         )
                 );
+                article.setImage(rs.getString("image_filename"));
                 articles.add(article);
             }
             return articles;

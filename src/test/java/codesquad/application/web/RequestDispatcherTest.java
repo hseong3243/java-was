@@ -7,8 +7,8 @@ import codesquad.fixture.HttpFixture;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpResponse;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,8 +29,8 @@ class RequestDispatcherTest extends ApplicationTest {
                     .method(HttpMethod.POST).path("/user/create")
                     .body("userId=userId&password=password&name=name&email=email@email.com")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             HttpResponse httpResponse = requestDispatcher.handle(httpRequest);

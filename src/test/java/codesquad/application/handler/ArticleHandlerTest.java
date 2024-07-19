@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.database.ArticleMemoryDatabase;
+import codesquad.application.file.ImageStore;
 import codesquad.application.database.SessionMemoryStorage;
 import codesquad.application.database.UserMemoryDatabase;
 import codesquad.application.model.Article;
@@ -12,11 +13,12 @@ import codesquad.application.util.ResourceUtils;
 import codesquad.application.web.ModelAndView;
 import codesquad.fixture.HttpFixture;
 import codesquad.fixture.UserFixture;
+import codesquad.server.message.HttpFile;
 import codesquad.server.message.HttpMethod;
 import codesquad.server.message.HttpRequest;
 import codesquad.server.message.HttpStatusCode;
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -31,13 +33,15 @@ class ArticleHandlerTest {
     private SessionMemoryStorage sessionStorage;
     private ArticleMemoryDatabase articleDatabase;
     private UserMemoryDatabase userMemoryDatabase;
+    private ImageStore imageStore;
 
     @BeforeEach
     void setUp() {
         sessionStorage = new SessionMemoryStorage();
         articleDatabase = new ArticleMemoryDatabase();
         userMemoryDatabase = new UserMemoryDatabase();
-        articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userMemoryDatabase);
+        imageStore = new ImageStore();
+        articleHandler = new ArticleHandler(articleDatabase, sessionStorage, userMemoryDatabase, imageStore);
     }
 
     @Nested
@@ -54,8 +58,8 @@ class ArticleHandlerTest {
                     .method(HttpMethod.GET).path("/article/write")
                     .cookie("SID", sessionId)
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             ModelAndView mav = articleHandler.getArticleForm(httpRequest);
@@ -73,15 +77,15 @@ class ArticleHandlerTest {
             String rawHttpMessage = HttpFixture.builder()
                     .method(HttpMethod.GET).path("/article/write")
                     .buildToRawHttpMessage();
-            BufferedReader br = new BufferedReader(new StringReader(rawHttpMessage));
-            HttpRequest httpRequest = HttpRequest.parse(br);
+            BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(rawHttpMessage.getBytes()));
+            HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
             ModelAndView mav = articleHandler.getArticleForm(httpRequest);
 
             //then
             assertThat(mav.getView()).isEmpty();
-            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.MOVED_PERMANENTLY);
+            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
             assertThat(mav.getHeaders().get("Location")).isNotEmpty().isEqualTo("/login");
         }
     }
@@ -119,6 +123,31 @@ class ArticleHandlerTest {
         }
 
         @Test
+        @DisplayName("이미지가 존재하는 경우 이미지 경로를 함께 저장한다.")
+        void ifImageExists_ThenStoreImagePath() {
+            //given
+            User user = UserFixture.user();
+            userMemoryDatabase.addUser(user);
+            HttpRequest httpRequest = HttpFixture.builder()
+                    .method(HttpMethod.POST).path("/article")
+                    .cookie("SID", sessionStorage.store(user))
+                    .body("title=title&content=content")
+                    .buildToHttpRequest();
+            httpRequest.files().put("image", new HttpFile("asdf.png", "image/png", "file".getBytes()));
+
+            //when
+            ModelAndView mav = articleHandler.postArticle(httpRequest);
+
+            //then
+            assertThat(mav.getModelValue("articleId")).isNotNull().asLong().isEqualTo(1);
+            Optional<Article> optionalArticle = articleDatabase.findById(1L);
+            assertThat(optionalArticle).isNotEmpty().get()
+                    .satisfies(article -> {
+                        assertThat(article.getImageFilename()).isNotBlank();
+                    });
+        }
+
+        @Test
         @DisplayName("로그인하지 않은 경우 로그인 화면으로 리다이렉트 된다.")
         void redirectToLoginWhenNoLogin() {
             HttpRequest httpRequest = HttpFixture.builder()
@@ -131,7 +160,7 @@ class ArticleHandlerTest {
 
             //then
             assertThat(mav.getView()).isEmpty();
-            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.MOVED_PERMANENTLY);
+            assertThat(mav.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
             assertThat(mav.getHeaders().get("Location")).isNotEmpty().isEqualTo("/login");
         }
 

@@ -1,4 +1,4 @@
-package codesquad.application;
+package codesquad.application.init;
 
 import codesquad.server.message.RuntimeIOException;
 import java.io.BufferedWriter;
@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class CSVDatabaseInit {
+public class CSVDatabaseInit implements DatabaseInit {
 
     private final String databaseName;
 
@@ -14,6 +14,7 @@ public class CSVDatabaseInit {
         this.databaseName = databaseName;
     }
 
+    @Override
     public void init() {
         try {
             databaseInit();

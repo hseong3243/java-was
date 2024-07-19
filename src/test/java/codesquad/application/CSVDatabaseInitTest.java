@@ -2,6 +2,7 @@ package codesquad.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import codesquad.application.init.CSVDatabaseInit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

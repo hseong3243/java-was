@@ -2,6 +2,7 @@ package codesquad.application.bean;
 
 import codesquad.application.config.DatabaseConfig;
 import codesquad.application.config.HandlerConfig;
+import codesquad.application.config.InitializeConfig;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +16,7 @@ public class BeanFactory {
 
     public void start() {
         try {
+            register(InitializeConfig.class);
             register(DatabaseConfig.class);
             register(HandlerConfig.class);
         } catch (Exception e) {

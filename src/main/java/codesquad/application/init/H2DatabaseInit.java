@@ -1,4 +1,4 @@
-package codesquad.application;
+package codesquad.application.init;
 
 import codesquad.application.util.DBConnectionUtils;
 import java.sql.Connection;
@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseInit {
+public class H2DatabaseInit implements DatabaseInit {
 
-    private static final Logger log = LoggerFactory.getLogger(DatabaseInit.class);
+    private static final Logger log = LoggerFactory.getLogger(H2DatabaseInit.class);
 
-    public static void init() {
+    public void init() {
         Connection con = DBConnectionUtils.getConnection();
         String createUserSQL = "CREATE TABLE if not exists users (" +
                 "user_id varchar(100) PRIMARY KEY," +

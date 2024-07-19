@@ -2,6 +2,7 @@ package codesquad.application;
 
 import codesquad.application.bean.BeanFactory;
 import codesquad.application.database.SessionStorage;
+import codesquad.application.init.DatabaseInit;
 import codesquad.server.Server;
 import codesquad.application.web.AnnotationHandlerMapping;
 import codesquad.application.web.RequestDispatcher;
@@ -20,13 +21,13 @@ public class Application {
     }
 
     public BeanFactory start() {
-        log.debug("h2 인메모리 데이터베이스를 실행합니다.");
-        CSVDatabaseInit databaseInit = new CSVDatabaseInit("realcsv");
-        databaseInit.init();
-
         log.debug("컨텍스트를 실행합니다.");
         BeanFactory beanFactory = new BeanFactory();
         beanFactory.start();
+
+        log.debug("데이터베이스를 초기화합니다.");
+        DatabaseInit databaseInit = beanFactory.getBean(DatabaseInit.class);
+        databaseInit.init();
 
         log.debug("핸들러 매퍼를 초기화합니다.");
         AnnotationHandlerMapping annotationHandlerMapping = new AnnotationHandlerMapping();

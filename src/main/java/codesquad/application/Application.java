@@ -2,9 +2,10 @@ package codesquad.application;
 
 import codesquad.application.bean.BeanFactory;
 import codesquad.application.database.SessionStorage;
-import codesquad.server.Server;
+import codesquad.application.init.ApplicationInitializer;
 import codesquad.application.web.AnnotationHandlerMapping;
 import codesquad.application.web.RequestDispatcher;
+import codesquad.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,18 +21,16 @@ public class Application {
     }
 
     public BeanFactory start() {
-        log.debug("h2 인메모리 데이터베이스를 실행합니다.");
-        DatabaseInit.init();
-
         log.debug("컨텍스트를 실행합니다.");
         BeanFactory beanFactory = new BeanFactory();
         beanFactory.start();
 
-        log.debug("핸들러 매퍼를 초기화합니다.");
-        AnnotationHandlerMapping annotationHandlerMapping = new AnnotationHandlerMapping();
-        annotationHandlerMapping.init(beanFactory);
+        log.debug("초기화 작업을 실행합니다.");
+        ApplicationInitializer applicationInitializer = new ApplicationInitializer(beanFactory);
+        applicationInitializer.init();
 
         log.debug("요청 디스패처를 초기화합니다.");
+        AnnotationHandlerMapping annotationHandlerMapping = beanFactory.getBean(AnnotationHandlerMapping.class);
         SessionStorage sessionStorage = beanFactory.getBean(SessionStorage.class);
         RequestDispatcher requestDispatcher = new RequestDispatcher(annotationHandlerMapping, sessionStorage);
 

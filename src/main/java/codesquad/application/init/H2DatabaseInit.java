@@ -1,4 +1,4 @@
-package codesquad.application;
+package codesquad.application.init;
 
 import codesquad.application.util.DBConnectionUtils;
 import java.sql.Connection;
@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseInit {
+public class H2DatabaseInit implements DatabaseInit {
 
-    private static final Logger log = LoggerFactory.getLogger(DatabaseInit.class);
+    private static final Logger log = LoggerFactory.getLogger(H2DatabaseInit.class);
 
-    public static void init() {
+    public void init() {
         Connection con = DBConnectionUtils.getConnection();
         String createUserSQL = "CREATE TABLE if not exists users (" +
                 "user_id varchar(100) PRIMARY KEY," +
@@ -43,7 +43,7 @@ public class DatabaseInit {
             sessionPstmt.executeUpdate();
         } catch (SQLException e) {
             log.error("데이터베이스 초기화에 실패했습니다.", e);
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 에러 발생", e);
         } finally {
             DBConnectionUtils.closeConnection(null, userPstmt, null);
             DBConnectionUtils.closeConnection(null, articlePstmt, null);

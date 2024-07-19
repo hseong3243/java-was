@@ -1,7 +1,7 @@
 package codesquad.base;
 
 import codesquad.application.bean.BeanFactory;
-import codesquad.application.database.SessionMemoryStorage;
+import codesquad.application.database.memory.SessionMemoryStorage;
 import codesquad.application.database.SessionStorage;
 import codesquad.application.web.AnnotationHandlerMapping;
 import codesquad.application.web.RequestDispatcher;
@@ -19,8 +19,8 @@ public abstract class ApplicationTest {
         beanFactory = new BeanFactory();
         beanFactory.start();
 
-        handlerMapping = new AnnotationHandlerMapping();
-        handlerMapping.init(beanFactory);
+        handlerMapping = new AnnotationHandlerMapping(beanFactory);
+        handlerMapping.init();
 
         sessionStorage = new SessionMemoryStorage();
 

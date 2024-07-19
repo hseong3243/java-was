@@ -1,5 +1,6 @@
-package codesquad.application.database;
+package codesquad.application.database.h2;
 
+import codesquad.application.database.SessionStorage;
 import codesquad.application.model.User;
 import codesquad.application.util.DBConnectionUtils;
 import java.sql.Connection;

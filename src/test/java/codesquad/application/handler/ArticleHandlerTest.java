@@ -3,10 +3,10 @@ package codesquad.application.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
-import codesquad.application.database.ArticleMemoryDatabase;
+import codesquad.application.database.memory.ArticleMemoryDatabase;
 import codesquad.application.file.ImageStore;
-import codesquad.application.database.SessionMemoryStorage;
-import codesquad.application.database.UserMemoryDatabase;
+import codesquad.application.database.memory.SessionMemoryStorage;
+import codesquad.application.database.memory.UserMemoryDatabase;
 import codesquad.application.model.Article;
 import codesquad.application.model.User;
 import codesquad.application.util.ResourceUtils;

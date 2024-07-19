@@ -1,55 +1,52 @@
-package codesquad.application.database;
+package codesquad.application.database.csv;
 
+import codesquad.application.database.UserDatabase;
 import codesquad.application.model.User;
-import codesquad.application.util.DBConnectionUtils;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserJdbcDatabase implements UserDatabase {
-
+public class UserCsvDatabase implements UserDatabase {
     @Override
     public void addUser(User user) {
-        String sql = "INSERT INTO users (user_id, password, name, email) VALUES (?, ?, ?, ?)";
+        String sql = "insert into user values (''{0}'', ''{1}'', ''{2}'', ''{3}'')";
+        sql = MessageFormat.format(sql,
+                user.getUserId(),
+                user.getPassword(), user.getPassword(), user.getEmail());
 
         Connection con = null;
-        PreparedStatement pstmt = null;
-
+        Statement stmt = null;
         try {
-            con = DBConnectionUtils.getConnection();
-            pstmt = con.prepareStatement(sql);
-
-            pstmt.setString(1, user.getUserId());
-            pstmt.setString(2, user.getPassword());
-            pstmt.setString(3, user.getName());
-            pstmt.setString(4, user.getEmail());
-            pstmt.executeUpdate();
+            con = CSVConnectionUtil.getConnection();
+            stmt = con.createStatement();
+            stmt.executeUpdate(sql);
         } catch (SQLException e) {
             throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
-            DBConnectionUtils.closeConnection(con, pstmt, null);
+            CSVConnectionUtil.closeConnection(con, stmt, null);
         }
     }
 
     @Override
     public Optional<User> findUserByUserId(String userId) {
-        String sql = "SELECT * FROM users WHERE user_id = ?";
+        String sql = "select * from user where userId = ''{0}''";
+        sql = MessageFormat.format(sql, userId);
 
         Connection con = null;
-        PreparedStatement pstmt = null;
+        Statement stmt = null;
         ResultSet rs = null;
         try {
-            con = DBConnectionUtils.getConnection();
-            pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, userId);
-            rs = pstmt.executeQuery();
+            con = CSVConnectionUtil.getConnection();
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(sql);
             if (rs.next()) {
                 User user = User.create(
-                        rs.getString("user_id"),
+                        rs.getString("userId"),
                         rs.getString("password"),
                         rs.getString("name"),
                         rs.getString("email")
@@ -60,25 +57,25 @@ public class UserJdbcDatabase implements UserDatabase {
         } catch (SQLException e) {
             throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
-            DBConnectionUtils.closeConnection(con, pstmt, rs);
+            CSVConnectionUtil.closeConnection(con, stmt, rs);
         }
     }
 
     @Override
     public List<User> findAll() {
-        String sql = "SELECT * FROM users";
+        String sql = "select * from user";
 
+        List<User> users = new ArrayList<>();
         Connection con = null;
-        PreparedStatement pstmt = null;
+        Statement stmt = null;
         ResultSet rs = null;
         try {
-            con = DBConnectionUtils.getConnection();
-            pstmt = con.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-            List<User> users = new ArrayList<>();
+            con = CSVConnectionUtil.getConnection();
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 User user = User.create(
-                        rs.getString("user_id"),
+                        rs.getString("userId"),
                         rs.getString("password"),
                         rs.getString("name"),
                         rs.getString("email")
@@ -88,8 +85,6 @@ public class UserJdbcDatabase implements UserDatabase {
             return users;
         } catch (SQLException e) {
             throw new IllegalArgumentException("SQL 예외 발생", e);
-        } finally {
-            DBConnectionUtils.closeConnection(con, pstmt, rs);
         }
     }
 }

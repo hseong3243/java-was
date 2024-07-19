@@ -1,5 +1,6 @@
-package codesquad.application.database;
+package codesquad.application.database.memory;
 
+import codesquad.application.database.ArticleDatabase;
 import codesquad.application.model.Article;
 import java.util.List;
 import java.util.Map;

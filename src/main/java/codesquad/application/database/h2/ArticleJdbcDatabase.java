@@ -1,5 +1,6 @@
-package codesquad.application.database;
+package codesquad.application.database.h2;
 
+import codesquad.application.database.ArticleDatabase;
 import codesquad.application.model.Article;
 import codesquad.application.model.Author;
 import codesquad.application.util.DBConnectionUtils;

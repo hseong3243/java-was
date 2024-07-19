@@ -34,7 +34,7 @@ class AnnotationHandlerMappingTest extends ApplicationTest {
             HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
-            handlerMapping.init(beanFactory);
+            handlerMapping.init();
 
             //then
             HandlerMethod handlerMethod = handlerMapping.getHandler(httpRequest);
@@ -52,7 +52,7 @@ class AnnotationHandlerMappingTest extends ApplicationTest {
             HttpRequest httpRequest = HttpRequest.parse(bis);
 
             //when
-            handlerMapping.init(beanFactory);
+            handlerMapping.init();
 
             //then
             HandlerMethod handlerMethod = handlerMapping.getHandler(httpRequest);

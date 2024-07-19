@@ -30,8 +30,8 @@ public class Application {
         databaseInit.init();
 
         log.debug("핸들러 매퍼를 초기화합니다.");
-        AnnotationHandlerMapping annotationHandlerMapping = new AnnotationHandlerMapping();
-        annotationHandlerMapping.init(beanFactory);
+        AnnotationHandlerMapping annotationHandlerMapping = new AnnotationHandlerMapping(beanFactory);
+        annotationHandlerMapping.init();
 
         log.debug("요청 디스패처를 초기화합니다.");
         SessionStorage sessionStorage = beanFactory.getBean(SessionStorage.class);

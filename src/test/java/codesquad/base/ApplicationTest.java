@@ -19,8 +19,8 @@ public abstract class ApplicationTest {
         beanFactory = new BeanFactory();
         beanFactory.start();
 
-        handlerMapping = new AnnotationHandlerMapping();
-        handlerMapping.init(beanFactory);
+        handlerMapping = new AnnotationHandlerMapping(beanFactory);
+        handlerMapping.init();
 
         sessionStorage = new SessionMemoryStorage();
 

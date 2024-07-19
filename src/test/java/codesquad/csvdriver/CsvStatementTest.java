@@ -1,6 +1,7 @@
 package codesquad.csvdriver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.model.User;
@@ -97,6 +98,8 @@ class CsvStatementTest {
 
                 //then
                 assertThat(rs.next()).isTrue();
+                assertThat(rs.getString("userId")).isEqualTo("userId");
+                assertThatThrownBy(() -> rs.getString("name")).isInstanceOf(SQLException.class);
             }
         }
 

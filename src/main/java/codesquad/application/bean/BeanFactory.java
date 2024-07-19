@@ -82,6 +82,7 @@ public class BeanFactory {
             if(anInterface.equals(targetClass)) {
                 return true;
             }
+            return isImplementation(anInterface, targetClass);
         }
         return false;
     }

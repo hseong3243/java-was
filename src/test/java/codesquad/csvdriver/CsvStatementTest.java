@@ -1,6 +1,7 @@
 package codesquad.csvdriver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchException;
 
 import codesquad.application.model.User;
 import java.sql.Connection;
@@ -43,6 +44,61 @@ class CsvStatementTest {
     @Nested
     @DisplayName("executeQuery 호출 시")
     class ExecuteQueryTest {
+
+        @Nested
+        @DisplayName("select 문 실행 시")
+        class SelectTest {
+
+            @Test
+            @DisplayName("모든 데이터를 선택할 수 있다.")
+            void selectAll() throws SQLException {
+                //given
+                String insertA = "insert into user values ('userIdA', 'usernameA', 'passwordA', 'emailA@email.com')";
+                String insertB = "insert into user values ('userIdB', 'usernameB', 'passwordB', 'emailB@email.com')";
+                stmt.executeUpdate(insertA);
+                stmt.executeUpdate(insertB);
+                String sql = "select * from user";
+
+                //when
+                ResultSet rs = stmt.executeQuery(sql);
+
+                //then
+                assertThat(rs.next()).isTrue();
+                assertThat(rs.next()).isTrue();
+            }
+
+            @Test
+            @DisplayName("where 절이 포함되어 실행될 수 있다.")
+            void executeContainsWhere() throws SQLException {
+                //given
+                String insert = "insert into user values ('userId', 'username', 'password', 'email@email.com')";
+                stmt.executeUpdate(insert);
+                String sql = "select * from user where userId = 'userId'";
+
+                //when
+                ResultSet rs = stmt.executeQuery(sql);
+
+                //then
+                assertThat(rs.next()).isTrue();
+                String userId = rs.getString("userId");
+                assertThat(userId).isEqualTo("userId");
+            }
+
+            @Test
+            @DisplayName("조회할 컬럼을 선택할 수 있다.")
+            void selectColumns() throws SQLException {
+                //given
+                String insert = "insert into user values ('userId', 'username', 'password', 'email@email.com')";
+                stmt.executeUpdate(insert);
+                String sql = "select userId from user where userId = 'userId'";
+
+                //when
+                ResultSet rs = stmt.executeQuery(sql);
+
+                //then
+                assertThat(rs.next()).isTrue();
+            }
+        }
 
         @Test
         @DisplayName("user 테이블 select 문 실행 시")
@@ -95,6 +151,19 @@ class CsvStatementTest {
         class InsertTest {
 
             @Test
+            @DisplayName("일부 컬럼만 데이터를 저장할 수는 없다.")
+            void mustInsertAllData() throws SQLException {
+                //given
+                String sql = "insert into user (userId) values ('insert')";
+
+                //when
+                Exception exception = catchException(() -> stmt.executeUpdate(sql));
+
+                //then
+                assertThat(exception).isInstanceOf(IllegalArgumentException.class);
+            }
+
+            @Test
             @DisplayName("유저 데이터베이스에 데이터를 저장한다.")
             void insertUser() throws SQLException {
                 //given
@@ -136,6 +205,22 @@ class CsvStatementTest {
         @Nested
         @DisplayName("delete 문 실행 시")
         class DeleteTest {
+
+            @Test
+            @DisplayName("where 절을 사용할 수 있다.")
+            void containsWhere() throws SQLException {
+                //given
+                String insert = "insert into user values ('delete', 'delete', 'delete', 'delete@test.com')";
+                stmt.executeUpdate(insert);
+                String sql = "delete from user where userId = 'delete'";
+
+                //when
+                stmt.executeUpdate(sql);
+
+                //then
+                ResultSet rs = stmt.executeQuery("select * from user where userId = 'delete'");
+                assertThat(rs.next()).isFalse();
+            }
 
             @Test
             @DisplayName("유저 데이터베이스에서 데이터를 삭제한다.")

@@ -35,7 +35,7 @@ public final class HttpResponseFactory {
 
     public static HttpResponse internalServerError() {
         HttpResponse httpResponse = new HttpResponse(HTTP1_1, HttpStatusCode.INTERNAL_SERVER_ERROR,
-                ResourceUtils.getStaticFile("/error/internal.html"));
+                ResourceUtils.getStaticFile("/error/internalServerError.html"));
         httpResponse.addHeader("Content-Type", "text/html; charset=UTF-8");
         return httpResponse;
     }

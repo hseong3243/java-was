@@ -26,7 +26,7 @@ public class UserCsvDatabase implements UserDatabase {
             stmt = con.createStatement();
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
             CSVConnectionUtil.closeConnection(con, stmt, null);
         }
@@ -55,7 +55,7 @@ public class UserCsvDatabase implements UserDatabase {
             }
             return Optional.empty();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
             CSVConnectionUtil.closeConnection(con, stmt, rs);
         }
@@ -84,7 +84,7 @@ public class UserCsvDatabase implements UserDatabase {
             }
             return users;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         }
     }
 }

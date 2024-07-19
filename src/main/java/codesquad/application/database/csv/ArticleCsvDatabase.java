@@ -27,7 +27,7 @@ public class ArticleCsvDatabase implements ArticleDatabase {
             stmt.executeUpdate(sql);
             return article.getArticleId();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
             CSVConnectionUtil.closeConnection(con, stmt, null);
         }
@@ -50,7 +50,7 @@ public class ArticleCsvDatabase implements ArticleDatabase {
             }
             return (long) (count + 1);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
             CSVConnectionUtil.closeConnection(con, stmt, rs);
         }
@@ -85,7 +85,7 @@ public class ArticleCsvDatabase implements ArticleDatabase {
             }
             return Optional.empty();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
             CSVConnectionUtil.closeConnection(con, stmt, rs);
         }
@@ -107,7 +107,7 @@ public class ArticleCsvDatabase implements ArticleDatabase {
             }
             return "";
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         } finally {
             CSVConnectionUtil.closeConnection(con, stmt, rs);
         }
@@ -142,7 +142,7 @@ public class ArticleCsvDatabase implements ArticleDatabase {
             }
             return articles;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 예외 발생", e);
         }
     }
 }

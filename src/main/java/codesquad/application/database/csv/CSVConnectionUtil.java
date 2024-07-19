@@ -23,19 +23,19 @@ public class CSVConnectionUtil {
     }
 
     public static void closeConnection(Connection con, Statement stmt, ResultSet rs) {
-        if(con != null) {
+        if (con != null) {
             try {
                 con.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException("SQL 에러 발생", e);
             }
         }
 
-        if(stmt != null) {
+        if (stmt != null) {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException("SQL 에러 발생", e);
             }
         }
 
@@ -43,7 +43,7 @@ public class CSVConnectionUtil {
             try {
                 rs.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException("SQL 에러 발생", e);
             }
         }
     }

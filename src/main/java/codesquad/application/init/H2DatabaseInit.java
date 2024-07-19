@@ -43,7 +43,7 @@ public class H2DatabaseInit implements DatabaseInit {
             sessionPstmt.executeUpdate();
         } catch (SQLException e) {
             log.error("데이터베이스 초기화에 실패했습니다.", e);
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("SQL 에러 발생", e);
         } finally {
             DBConnectionUtils.closeConnection(null, userPstmt, null);
             DBConnectionUtils.closeConnection(null, articlePstmt, null);

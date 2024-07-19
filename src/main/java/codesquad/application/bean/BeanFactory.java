@@ -3,6 +3,7 @@ package codesquad.application.bean;
 import codesquad.application.config.DatabaseConfig;
 import codesquad.application.config.HandlerConfig;
 import codesquad.application.config.InitializeConfig;
+import codesquad.application.init.Initializer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,6 +17,7 @@ public class BeanFactory {
 
     public void start() {
         try {
+            context.put("beanFactory", this);
             register(InitializeConfig.class);
             register(DatabaseConfig.class);
             register(HandlerConfig.class);
@@ -86,5 +88,11 @@ public class BeanFactory {
 
     public List<Object> getBeans() {
         return context.values().stream().toList();
+    }
+
+    public List<Object> getBeans(Class<Initializer> initializerClass) {
+        return context.values().stream()
+                .filter(bean -> isImplementation(bean.getClass(), initializerClass))
+                .toList();
     }
 }

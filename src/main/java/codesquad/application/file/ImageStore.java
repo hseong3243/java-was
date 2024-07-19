@@ -42,7 +42,7 @@ public class ImageStore {
             BufferedInputStream bis = new BufferedInputStream(fis);
             return bis.readAllBytes();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeIOException(e);
         }
     }
 }

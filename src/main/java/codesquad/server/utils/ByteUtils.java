@@ -1,5 +1,6 @@
 package codesquad.server.utils;
 
+import codesquad.server.message.RuntimeIOException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public final class ByteUtils {
             }
             return toByteArray(result);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeIOException(e);
         }
     }
 
